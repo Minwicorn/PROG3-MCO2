@@ -268,7 +268,7 @@ public class HotelView {
     
         if (reservation != null) {
             // Calculate and set total price
-            reservation.calculateTotalPrice();
+            reservation.calculateTotalPrice(hotel);
     
             System.out.println("\nReservation Details:");
             System.out.println("Hotel Name: " + hotel.getHotelName());
@@ -277,7 +277,7 @@ public class HotelView {
             System.out.println("Check-in Date: " + checkInDate);
             System.out.println("Check-out Date: " + checkOutDate);
             System.out.println("Total Price: $" + reservation.getTotalPrice());
-            System.out.println("Price per night: $" + reservation.getPricePerNight());
+            //System.out.println("Price per night: $" + reservation.getPricePerNight());
         } else {
             System.out.println("No reservation found for room number " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() +
                     " from " + checkInDate + " to " + checkOutDate);
@@ -306,7 +306,6 @@ public class HotelView {
                 System.out.println("5. Exit");
             }
 
-            System.out.print("Enter your choice: ");
             int choice = getValidatedIntInput("Enter your choice: ", 1, 5);
             scanner.nextLine(); // consume newline
 
@@ -333,7 +332,6 @@ public class HotelView {
                 System.out.println("3. Show reservation details");
                 System.out.println("4. Back to main menu");
 
-                System.out.print("Enter your choice: ");
                 int choice2 = getValidatedIntInput("Enter your choice: ", 1, 4);
                 scanner.nextLine(); // consume newline
 
@@ -372,11 +370,12 @@ public class HotelView {
                 System.out.println("2. Add a room to a hotel");
                 System.out.println("3. Remove a room from a hotel");
                 System.out.println("4. Update room price");
-                System.out.println("5. Remove a hotel");
-                System.out.println("6. List hotels");
-                System.out.println("7. Back to main menu");
+                System.out.println("5. Modify price for a certain day");
+                System.out.println("6. Modify price for a range of days");
+                System.out.println("7. Remove a hotel");
+                System.out.println("8. List hotels");
+                System.out.println("9. Back to main menu");
 
-                System.out.print("Enter your choice: ");
                 int choice3 = getValidatedIntInput("Enter your choice: ", 1, 7);
                 scanner.nextLine(); // consume newline
 
@@ -410,16 +409,31 @@ public class HotelView {
                         }
                         break;
                     case 5:
+                        if (areAnyRoomsAvailable()) {
+                            modifyDatePrice();
+                        } else {
+                            System.out.println("No rooms available. Please add a room first.");
+                        }
+                        break;
+                    case 6:
+                        if (areAnyRoomsAvailable()) {
+                            //modifyDatePrice();
+                            System.out.println("modifying date price");
+                        } else {
+                            System.out.println("No rooms available. Please add a room first.");
+                        }
+                        break;
+                    case 7:
                         if (controller.getHotels().isEmpty()) {
                             listHotels();
                         } else {
                             removeHotel();
                         }
                         break;
-                    case 6:
+                    case 8:
                         listHotels();
                         break;
-                    case 7:
+                    case 9:
                         break;
                     default:
                         System.out.println("Invalid choice, please try again.");
@@ -434,7 +448,6 @@ public class HotelView {
                 System.out.println("6. Show selected room info across the month");
                 System.out.println("7. Back to main menu");
 
-                System.out.print("Enter your choice: ");
                 int choice4 = getValidatedIntInput("Enter your choice: ", 1, 7);
                 scanner.nextLine(); // consume newline
 
@@ -673,6 +686,24 @@ public class HotelView {
         boolean confirm = confirmChanges();
         if(confirm)
             controller.updateRoomPrice(hotel.getHotelName(), newPrice);
+    }
+
+    private void modifyDatePrice() {
+        HotelModel hotel = validateHotelName("Enter hotel name: ");
+        System.out.print("Enter day to modify (1-31): ");
+        int day = scanner.nextInt();
+        System.out.print("Enter price rate (50-150): ");
+        int priceRate = scanner.nextInt();
+        if(day>31 || day<1)
+            displayEnterAnother("day.");
+        else if(priceRate > 150 || priceRate < 50)
+            displayEnterAnother("price.");
+        else{
+            scanner.nextLine(); // consume newline
+            boolean confirm = confirmChanges();
+            if(confirm)
+                controller.datePriceModifier(hotel, day, priceRate); 
+        }
     }
 
     /**

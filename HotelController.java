@@ -476,5 +476,24 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
         return null;
     }
     
-    
+    /**
+     * Method to set a percent modifier for a specific date
+     * @param day day in which price is being modified
+     * @param percent percent from 50% to 150% on price to modify
+     */
+    public void datePriceModifier(HotelModel hotel, int day, int percent){
+        hotel.setDayModifier(day, percent);
+    }
+
+    /**
+     * Method to set a percent modifier for a date range
+     * @param day1 first day in which price is being modified
+     * @param day2 last day in which price is being modified
+     * @param percent percent from 50% to 150% on price to modify
+     */
+    public void datePriceModifier(HotelModel hotel, int day1, int day2, int percent){
+        for(int i=day1;i<day2;i++){
+            datePriceModifier(hotel,i,percent);
+        }
+    }
 }

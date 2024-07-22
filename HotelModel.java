@@ -9,6 +9,7 @@ public class HotelModel {
     private String hotelName;
     private List<Room> rooms;
     private List<Reservation> reservations;
+    private int[] dayModifier = new int[31];
 
     /**
      * Constructs a new HotelModel with the specified hotel name.
@@ -18,6 +19,10 @@ public class HotelModel {
         this.hotelName = hotelName;
         this.rooms = new ArrayList<>();
         this.reservations = new ArrayList<>();
+        this.dayModifier = new int[31];
+        for(int i=0;i<31;i++){
+            dayModifier[i]=100; // initializes all days to 100% price
+        }
     }
 
     /**
@@ -121,8 +126,7 @@ public class HotelModel {
     public double calculateEarnings() {
         double earnings = 0;
         for (Reservation reservation : reservations) {
-            int days = reservation.getCheckOutDate() - reservation.getCheckInDate();
-            earnings += days * reservation.getRoom().getPrice();
+            earnings += reservation.getTotalPrice();
         }
         return earnings;
     }
@@ -240,4 +244,13 @@ public class HotelModel {
             room.removeReservation(checkInDate, checkOutDate);
         }
     }
+
+    public int[] getDayModifier(){
+        return this.dayModifier;
+    }
+
+    public void setDayModifier(int day, int modifier){
+        this.dayModifier[day-1] = modifier;
+    }
+
 }
