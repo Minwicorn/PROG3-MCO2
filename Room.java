@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a room at the hotel
+ */
 public class Room {
     private int roomNumber;
     private double price;

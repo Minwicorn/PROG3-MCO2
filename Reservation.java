@@ -1,3 +1,6 @@
+/**
+ * Represents a reservation made at the hotel
+ */
 public class Reservation {
     private String guestName;
     private int roomNumber;
@@ -5,6 +8,7 @@ public class Reservation {
     private int checkInDate;
     private int checkOutDate;
     private double totalPrice;
+    private int[] dayModifier = new int[31];
 
     /** 
      * Constructs a reservation with a room, guest name, room number, check in date and check out date
@@ -125,4 +129,26 @@ public class Reservation {
         }
     }
 
+    /**
+     * Method to set a percent modifier for a specific date
+     * @param day day in which price is being modified
+     * @param percent percent from 50% to 150% on price to modify
+     */
+    public void datePriceModifier(int day, int percent){
+        this.dayModifier[day]=percent;
+    }
+
+    /**
+     * Method to set a percent modifier for a date range
+     * @param day1 first day in which price is being modified
+     * @param day2 last day in which price is being modified
+     * @param percent percent from 50% to 150% on price to modify
+     */
+    public void datePriceModifier(int day1, int day2, int percent){
+        for(int i=day1;i<day2;i++){
+            datePriceModifier(i,percent);
+        }
+    }
+
+    
 }
