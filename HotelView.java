@@ -687,6 +687,9 @@ public class HotelView {
             controller.updateRoomPrice(hotel.getHotelName(), newPrice);
     }
 
+    /**
+     * Modifies the price of a reserved day in a specified hotel based on user inputted percentage.
+     */
     private void modifyDatePrice() {
         HotelModel hotel = validateHotelName("Enter hotel name: ");
         System.out.print("Enter day to modify (1-31): ");
@@ -707,6 +710,9 @@ public class HotelView {
         }
     }
 
+    /**
+     * Modifies the price of a range of reserved days in a specified hotel based on user inputted percentage.
+     */
     private void modifyDatePriceRange() {
         HotelModel hotel = validateHotelName("Enter hotel name: ");
         System.out.print("Enter first day to modify (1-31): ");

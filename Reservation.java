@@ -103,9 +103,6 @@ public class Reservation {
      * Method to calculate total price based on room price and duration 
     */ 
     public void calculateTotalPrice(HotelModel hotel) {
-        //double roomPrice = room.getPrice(); // Assuming Room class has getPrice() method
-        //int numberOfNights = calculateNumberOfNights();
-        //totalPrice = roomPrice * numberOfNights;
         double price=0;
 
         for(int i=this.checkInDate; i<checkOutDate; i++){

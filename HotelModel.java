@@ -245,10 +245,19 @@ public class HotelModel {
         }
     }
 
+    /**
+     * 
+     * @return the array of modifiers for each day
+     */
     public int[] getDayModifier(){
         return this.dayModifier;
     }
 
+    /**
+     * Method to set a percent modifier for a specific date
+     * @param day day in which price is being modified
+     * @param modifier percent from 50% to 150% on price to modify
+     */
     public void setDayModifier(int day, int modifier){
         this.dayModifier[day-1] = modifier;
     }

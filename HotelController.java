@@ -353,7 +353,13 @@ public class HotelController {
     }
 }
 
-// Helper method to check for overlapping reservations
+/**
+ * Helper method to check for overlapping reservations
+ * @param room Room for which reservation is to be made
+ * @param checkInDate Check-in date for the reservation
+ * @param checkOutDate Check-out date for the reservation
+ * @return
+ */
 private boolean isOverlappingReservation(Room room, int checkInDate, int checkOutDate) {
     for (Reservation existingReservation : room.getReservations()) {
         int existingCheckIn = existingReservation.getCheckInDate();
