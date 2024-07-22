@@ -417,8 +417,7 @@ public class HotelView {
                         break;
                     case 6:
                         if (areAnyRoomsAvailable()) {
-                            //modifyDatePrice();
-                            System.out.println("modifying date price");
+                            modifyDatePriceRange();
                         } else {
                             System.out.println("No rooms available. Please add a room first.");
                         }
@@ -701,8 +700,34 @@ public class HotelView {
         else{
             scanner.nextLine(); // consume newline
             boolean confirm = confirmChanges();
-            if(confirm)
-                controller.datePriceModifier(hotel, day, priceRate); 
+            if(confirm){
+                controller.datePriceModifier(hotel, day, priceRate);
+                displaySuccess("Price modified for day " + day);
+            }
+        }
+    }
+
+    private void modifyDatePriceRange() {
+        HotelModel hotel = validateHotelName("Enter hotel name: ");
+        System.out.print("Enter first day to modify (1-31): ");
+        int day1 = scanner.nextInt();
+        System.out.print("Enter last day to modify (1-31): ");
+        int day2 = scanner.nextInt();
+        System.out.print("Enter price rate (50-150): ");
+        int priceRate = scanner.nextInt();
+        if(day1>31 || day1<1)
+            displayEnterAnother("initial day.");
+        else if(day2>31 || day2<1 || day2<day1)
+            displayEnterAnother("final day.");
+        else if(priceRate > 150 || priceRate < 50)
+            displayEnterAnother("price.");
+        else{
+            scanner.nextLine(); // consume newline
+            boolean confirm = confirmChanges();
+            if(confirm){
+                controller.datePriceModifier(hotel, day1, day2, priceRate);
+                displaySuccess("Price modified for days " + day1 + "-" + day2);
+            }
         }
     }
 
