@@ -858,27 +858,31 @@ public class HotelView {
         String guestName = scanner.nextLine();
         int checkInDate;
         int checkOutDate;
-
-        do{
+    
+        do {
             System.out.print("Enter check-in date (1-31): ");
             checkInDate = scanner.nextInt();
-            if(checkInDate<1 || checkInDate>31)
+            if (checkInDate < 1 || checkInDate > 31) {
                 displayEnterAnother("date within the specified range.");
-        }
-        while (checkInDate<1 || checkInDate>31);
-
-        do{
+            }
+        } while (checkInDate < 1 || checkInDate > 31);
+    
+        do {
             System.out.print("Enter check-out date (1-31): ");
             checkOutDate = scanner.nextInt();
-            if(checkOutDate<1 || checkOutDate>31)
+            if (checkOutDate < 1 || checkOutDate > 31) {
                 displayEnterAnother("date within the specified range.");
-            else if(checkOutDate<checkInDate)
+            } else if (checkOutDate < checkInDate) {
                 displayEnterAnother("date.\nCheck-out date must be after check-in date.");
-        }
-        while (checkOutDate<1 || checkOutDate>31 || checkOutDate<checkInDate);
-
-        controller.makeReservation(hotel.getHotelName(), room.getRoomNumber(), guestName, checkInDate, checkOutDate);
-    }
+            }
+        } while (checkOutDate < 1 || checkOutDate > 31 || checkOutDate < checkInDate);
+    
+        scanner.nextLine(); // Consume the newline left-over
+        System.out.print("Enter discount code (or leave blank): ");
+        String discountCode = scanner.nextLine();
+    
+        controller.makeReservation(hotel.getHotelName(), room.getRoomNumber(), guestName, checkInDate, checkOutDate, discountCode);
+    }    
 
     /**
      * Cancels a reservation for a room in a specified hotel based on user input.
