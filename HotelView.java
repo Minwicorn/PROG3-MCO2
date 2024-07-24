@@ -2,6 +2,21 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
+
+import javax.swing.JFrame;
+import java.awt.FlowLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+
+import java.awt.FlowLayout;
+import java.awt.BorderLayout; 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * The `HotelView` class represents the view layer of the hotel reservation system.
  * It interacts with users through the console, displaying information and receiving input.
@@ -9,13 +24,61 @@ import java.util.InputMismatchException;
 public class HotelView {
     private HotelController controller;
     private Scanner scanner;
+    private JFrame mainFrame;
+    private JLabel greetingsPromptLbl;
+    private JButton createHotelBtn, listHotelBtn, manageHotelBtn, simulateBookingBtn;
 
     /**
      * Constructs a new `HotelView` object with a default `Scanner` for user input.
      */
     public HotelView() {
         this.scanner = new Scanner(System.in);
+        this.mainFrame = new JFrame("Hotel Reservation System");
+
+        this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.mainFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
+        this.mainFrame.setSize(400, 400);
+
+        JLabel greetingsPromptLbl = new JLabel();
+        greetingsPromptLbl.setText("Hotel Reservation System");
+        this.mainFrame.add(greetingsPromptLbl);
+
+        this.createHotelBtn = new JButton("Create Hotel");
+		this.createHotelBtn.setPreferredSize(new Dimension(300, 30));
+        this.createHotelBtn.setFocusable(false);
+		this.listHotelBtn = new JButton("List Hotels");
+		this.listHotelBtn.setPreferredSize(new Dimension(300, 30));
+        this.listHotelBtn.setFocusable(false);
+        this.manageHotelBtn = new JButton("Manage Hotel");
+		this.manageHotelBtn.setPreferredSize(new Dimension(300, 30));
+        this.manageHotelBtn.setFocusable(false);
+		this.simulateBookingBtn = new JButton("Simulate Booking");
+		this.simulateBookingBtn.setPreferredSize(new Dimension(300, 30));
+        this.simulateBookingBtn.setFocusable(false);
+
+        this.mainFrame.add(createHotelBtn);
+        this.mainFrame.add(listHotelBtn);
+        this.mainFrame.add(manageHotelBtn);
+        this.mainFrame.add(simulateBookingBtn);
+
+        this.mainFrame.setVisible(true);
     }
+
+    public void setCreateHotelBtnListener(ActionListener actionListener) {
+		this.createHotelBtn.addActionListener(actionListener);
+	}
+
+    public void setListHotelBtnListener(ActionListener actionListener) {
+		this.listHotelBtn.addActionListener(actionListener);
+	}
+
+    public void setManageHotelBtnListener(ActionListener actionListener) {
+		this.manageHotelBtn.addActionListener(actionListener);
+	}
+
+    public void setSimulateBookingBtnListener(ActionListener actionListener) {
+		this.simulateBookingBtn.addActionListener(actionListener);
+	}
 
     /**
      * Sets the controller for this view to interact with the backend logic.

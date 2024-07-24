@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 /**
  * The HotelController class manages operations related to hotels and rooms,
  * providing methods to add hotels, add rooms to hotels, manage reservations,
@@ -24,6 +29,50 @@ public class HotelController {
         this.hotels = hotels;
         this.view = view;
         this.hotels = new ArrayList<>();
+
+        // implement button listeners here
+
+        // WHEN "CREATE HOTEL" BUTTON IS PRESSED
+        this.view.setCreateHotelBtnListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+                System.out.println("create hotel selected");
+            }
+        });
+
+        // WHEN "LIST HOTELS" BUTTON IS PRESSED
+        this.view.setListHotelBtnListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+                System.out.println("list hotels selected");
+            }
+        });
+
+        // WHEN "MANAGE HOTEL" BUTTON IS PRESSED
+        this.view.setManageHotelBtnListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+                if (getHotels().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No hotels available. Please add a hotel first.");
+                } 
+                else {
+                    System.out.println("manage hotel selected");
+                }
+            }
+        });
+
+        // WHEN "SIMULATE BOOKING" BUTTON IS PRESSED
+        this.view.setSimulateBookingBtnListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) { 
+                if (getHotels().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "No hotels available. Please add a hotel first.");
+                }
+                else {
+                    System.out.println("simulate booking selected");
+                }
+            }
+        });
     }
 
     // Helper Method to find a hotel by name
