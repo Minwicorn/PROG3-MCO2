@@ -8,6 +8,7 @@ public class Reservation {
     private int checkInDate;
     private int checkOutDate;
     private double totalPrice;
+    private String discountCode;
     
 
     /** 
@@ -82,7 +83,8 @@ public class Reservation {
     @Override
     public String toString() {
         return "Reservation [guestName=" + guestName + ", roomNumber=" + roomNumber +
-                ", checkInDate=" + checkInDate + ", checkOutDate=" + checkOutDate + "]";
+                ", checkInDate=" + checkInDate + ", checkOutDate=" + checkOutDate + ", totalPrice=" + totalPrice +
+                ", discountCode=" + discountCode + "]";
     }
 
     /**
@@ -131,6 +133,34 @@ public class Reservation {
             return totalPrice / numberOfNights;
         } else {
             return 0.0; // Handle division by zero gracefully, if needed
+        }
+    }
+
+    /**
+     * Method to apply a discount based on the provided discount code
+     * @param discountCode the discount code to apply
+     */
+    public void applyDiscount(String discountCode) {
+        this.discountCode = discountCode; // Store the discount code
+
+        switch (discountCode) {
+            case "I_WORK_HERE":
+                totalPrice *= 0.90; // Apply a 10% discount
+                break;
+            case "STAY4_GET1":
+                if (calculateNumberOfNights() >= 5) {
+                    double pricePerNight = room.getPrice(); // Assuming the price per night is fixed
+                    totalPrice -= pricePerNight; // Subtract the price of the first night
+                }
+                break;
+            case "PAYDAY":
+                if ((checkInDate <= 15 && checkOutDate > 15) || (checkInDate <= 30 && checkOutDate > 30)) {
+                    totalPrice *= 0.93; // Apply a 7% discount
+                }
+                break;
+            default:
+                // Invalid or unsupported discount code
+                break;
         }
     }
 
