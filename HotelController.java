@@ -15,6 +15,8 @@ import java.awt.event.ActionListener;
 public class HotelController {
     private List<HotelModel> hotels; // List of hotels managed by the controller
     private HotelView view; // View component for displaying messages and data
+    private List<Reservation> reservations;
+
 
     // Default price for a room when added without specifying a price
     private static final double DEFAULT_ROOM_PRICE = 1299.0;
@@ -29,6 +31,7 @@ public class HotelController {
         this.hotels = hotels;
         this.view = view;
         this.hotels = new ArrayList<>();
+        this.reservations = new ArrayList<>();
 
         // implement button listeners here
 
@@ -102,6 +105,10 @@ public class HotelController {
             addRoomToHotel(hotelName, 101, 1);
             view.displayHotelDetails(newHotel);
         }
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
     /**
@@ -381,26 +388,29 @@ public class HotelController {
      * @param checkInDate Check-in date for the reservation
      * @param checkOutDate Check-out date for the reservation
      */
-    public void makeReservation(String hotelName, int roomNumber, String guestName, int checkInDate, int checkOutDate) {
+    public void makeReservation(String hotelName, int roomNumber, String guestName, int checkInDate, int checkOutDate, String discountCode) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
             if (room != null) {
-            if (isOverlappingReservation(room, checkInDate, checkOutDate)) {
-                view.displayEnterAnother("date range. The room is already booked for the selected dates.");
+                if (isOverlappingReservation(room, checkInDate, checkOutDate)) {
+                    view.displayEnterAnother("date range. The room is already booked for the selected dates.");
+                } else {
+                    Reservation reservation = new Reservation(room, guestName, roomNumber, checkInDate, checkOutDate);
+                    reservation.calculateTotalPrice(hotel);
+                    reservation.applyDiscount(discountCode);
+                    room.addReservation(reservation);
+                    hotel.addReservation(reservation);
+                    view.displaySuccess("Reservation made with total price: " + reservation.getTotalPrice());
+                }
             } else {
-                Reservation reservation = new Reservation(room, guestName, roomNumber, checkInDate, checkOutDate);
-                room.addReservation(reservation);
-                hotel.addReservation(reservation);
-                view.displaySuccess("Reservation made");
+                view.displayRoomNotFound(roomNumber);
             }
         } else {
-            view.displayRoomNotFound(roomNumber);
+            view.displayHotelNotFound(hotelName);
         }
-    } else {
-        view.displayHotelNotFound(hotelName);
-    }
-}
+    }    
+    
 
 /**
  * Helper method to check for overlapping reservations
