@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JTextField;
 import javax.swing.JOptionPane;
-
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * The HotelController class manages operations related to hotels and rooms,
@@ -30,6 +30,7 @@ public class HotelController {
     public HotelController(List<HotelModel> hotels, HotelView view) {
         this.hotels = hotels;
         this.view = view;
+        this.view.setController(this); // Set the controller in the view
         this.hotels = new ArrayList<>();
         this.reservations = new ArrayList<>();
 
@@ -38,8 +39,22 @@ public class HotelController {
         // WHEN "CREATE HOTEL" BUTTON IS PRESSED
         this.view.setCreateHotelBtnListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) { 
-                System.out.println("create hotel selected");
+			public void actionPerformed(ActionEvent e) {
+                JTextField hotelNameField = new JTextField();
+                Object[] message = {
+                    "Hotel Name:", hotelNameField
+                };
+        
+                int option = JOptionPane.showConfirmDialog(null, message, "Create Hotel", JOptionPane.OK_CANCEL_OPTION);
+                if (option == JOptionPane.OK_OPTION) {
+                    String hotelName = hotelNameField.getText();
+                    if (hotelName != null && !hotelName.isEmpty()) {
+                        view.getController().addHotel(hotelName);
+                        JOptionPane.showMessageDialog(null, "Hotel created successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Hotel name cannot be empty.");
+                    }
+                }
             }
         });
 
