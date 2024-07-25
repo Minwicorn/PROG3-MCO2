@@ -195,6 +195,7 @@ public class HotelView {
     public void displayRoomDetails(Room room) {
         System.out.println("Room Details:");
         System.out.println("Room Number: " + room.getRoomNumber());
+        System.out.println("Room Type: " + room.getRoomType());
         System.out.println("Price: $" + room.getPrice());
         System.out.println("Status: " + (room.isBooked() ? "Booked" : "Available"));
         System.out.println(); // Blank line for readability
@@ -342,6 +343,7 @@ public class HotelView {
             System.out.println("\nReservation Details:");
             System.out.println("Hotel Name: " + hotel.getHotelName());
             System.out.println("Room Number: " + room.getRoomNumber());
+            System.out.println("Room Type: " + room.getRoomType());
             System.out.println("Guest Name: " + reservation.getGuestName());
             System.out.println("Check-in Date: " + checkInDate);
             System.out.println("Check-out Date: " + checkOutDate);
@@ -721,12 +723,16 @@ public class HotelView {
         HotelModel hotel = validateHotelName("Enter hotel name: ");
         System.out.print("Enter room number: ");
         int roomNumber = scanner.nextInt();
+        System.out.print("Enter room type: ");
+        scanner.nextLine(); // consume newline
+        String roomType = scanner.nextLine();
         System.out.print("Enter number of rooms to add: ");
         int count = scanner.nextInt();
+
         scanner.nextLine(); // consume newline
         boolean confirm = confirmChanges();
         if(confirm)
-            controller.addRoomToHotel(hotel.getHotelName(), roomNumber, count);
+            controller.addRoomToHotel(hotel.getHotelName(), roomNumber, roomType, count);
     }
 
      /**

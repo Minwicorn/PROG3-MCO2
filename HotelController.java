@@ -117,7 +117,7 @@ public class HotelController {
             HotelModel newHotel = new HotelModel(hotelName);
             hotels.add(newHotel);
             view.displaySuccess("Added hotel " + hotelName);
-            addRoomToHotel(hotelName, 101, 1);
+            addRoomToHotel(hotelName, 101,"Standard" , 1);
             view.displayHotelDetails(newHotel);
         }
     }
@@ -154,7 +154,7 @@ public class HotelController {
      * @param roomNumber Starting room number of the first room to be added
      * @param count      Number of rooms to be added
      */
-    public void addRoomToHotel(String hotelName, int roomNumber, int count) {
+    public void addRoomToHotel(String hotelName, int roomNumber, String roomType, int count) {
         int successes = 0;
         
         HotelModel hotel = findHotelByName(hotelName);
@@ -164,15 +164,16 @@ public class HotelController {
             {
                 view.displayMaxRooms();
                 return;
-            } else if(room == null) {
+            } else if(room == null && (roomType.equals("Standard") || roomType.equals("Deluxe") || roomType.equals("Executive"))) 
+            {
                 for(int i=0;i<count;i++){
-                    successes += addRoomToHotel(hotelName, roomNumber+i, DEFAULT_ROOM_PRICE);
+                    successes += addRoomToHotel(hotelName, roomNumber+i, roomType, DEFAULT_ROOM_PRICE);
                 }
                 view.displaySuccess("Added " + successes + " room(s)");
                 return;
             }
             else {
-                view.displayEnterAnother("room number.");
+                view.displayEnterAnother("room number or appropriate type of room.");
             }
         }
     }
@@ -186,12 +187,17 @@ public class HotelController {
      * @param price      Price of the room to be added
      * @return 1 if the room was successfully added, 0 otherwise
      */
-    public int addRoomToHotel(String hotelName, int roomNumber, double price) {
+    public int addRoomToHotel(String hotelName, int roomNumber, String roomType, double price) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
             if (room == null) {
-                hotel.addRoom(new Room(roomNumber, price));
+                if(roomType.equals("Deluxe"))
+                    hotel.addRoom((Room)new Deluxe(roomNumber, price));
+                else if(roomType.equals("Executive"))
+                    hotel.addRoom((Room)new Executive(roomNumber, price));
+                else if(roomType.equals("Standard"))
+                    hotel.addRoom(new Room(roomNumber, price));
                 view.displaySuccess("Room "+ roomNumber + " added");
                 return 1;
             } else {

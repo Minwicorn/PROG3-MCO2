@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a room at the hotel
+ * Represents a standard room at the hotel
  */
 public class Room {
-    private int roomNumber;
-    private double price;
-    private boolean isBooked;
-    private List<Reservation> reservations;
+    protected int roomNumber;
+    protected double price;
+    protected boolean isBooked;
+    protected List<Reservation> reservations;
 
     /**
      * Constructs a room with a room number and a price
@@ -178,5 +178,18 @@ public class Room {
     // Optionally, you can add a method to get room name if applicable.
     public String getRoomName() {
         return "Room " + roomNumber;
+    }
+
+    /**
+     * 
+     * @return the type of room as a string
+     */
+    public String getRoomType() {
+        if (this instanceof Deluxe)
+            return "Deluxe";
+        else if (this instanceof Executive)
+            return "Executive";
+        else
+            return "Standard";
     }
 }
