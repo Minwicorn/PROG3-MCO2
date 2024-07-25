@@ -2,7 +2,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
-
+import javax.swing.*;
+import java.awt.*;
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
 
@@ -80,6 +81,11 @@ public class HotelView {
 		this.simulateBookingBtn.addActionListener(actionListener);
 	}
 
+    //Getter for the Controller
+    public HotelController getController() {
+        return this.controller;
+    }
+
     /**
      * Sets the controller for this view to interact with the backend logic.
      *
@@ -114,8 +120,8 @@ public class HotelView {
      *
      * @param interaction The type of interaction that was successful.
      */
-    public void displaySuccess(String interaction) {
-        System.out.println(interaction + " successfully.");
+    public void displaySuccess(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
 
      /**
@@ -123,8 +129,8 @@ public class HotelView {
      *
      * @param type The type of item the user is asked to enter.
      */
-    public void displayEnterAnother(String type) {
-        System.out.println("Please enter another " + type);
+    public void displayEnterAnother(String message) {
+        JOptionPane.showMessageDialog(null, "Please enter another " + message);
     }
 
 
