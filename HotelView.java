@@ -1,237 +1,569 @@
-import java.util.List;
-import java.util.Scanner;
-import java.util.InputMismatchException;
-
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.JFrame;
-import java.awt.FlowLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-
-import java.awt.FlowLayout;
-import java.awt.BorderLayout; 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 
-/**
- * The `HotelView` class represents the view layer of the hotel reservation system.
- * It interacts with users through the console, displaying information and receiving input.
- */
 public class HotelView {
-    private HotelController controller;
-    private Scanner scanner;
+
     private JFrame mainFrame;
-    private JLabel greetingsPromptLbl;
     private JButton createHotelBtn, listHotelBtn, manageHotelBtn, simulateBookingBtn;
+    private HotelController controller;
+    private JTable hotelsTable;
+    private JLabel roomNumberLabel;
+    private JLabel priceLabel;
+    private JLabel statusLabel;
+    private JTable bookedRoomsTable;
 
-    /**
-     * Constructs a new `HotelView` object with a default `Scanner` for user input.
-     */
-    public HotelView() {
-        this.scanner = new Scanner(System.in);
-        this.mainFrame = new JFrame("Hotel Reservation System");
-
-        this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.mainFrame.setLayout(new FlowLayout(FlowLayout.CENTER));
-        this.mainFrame.setSize(400, 400);
-
-        JLabel greetingsPromptLbl = new JLabel();
-        greetingsPromptLbl.setText("Hotel Reservation System");
-        this.mainFrame.add(greetingsPromptLbl);
-
-        this.createHotelBtn = new JButton("Create Hotel");
-		this.createHotelBtn.setPreferredSize(new Dimension(300, 30));
-        this.createHotelBtn.setFocusable(false);
-		this.listHotelBtn = new JButton("List Hotels");
-		this.listHotelBtn.setPreferredSize(new Dimension(300, 30));
-        this.listHotelBtn.setFocusable(false);
-        this.manageHotelBtn = new JButton("Manage Hotel");
-		this.manageHotelBtn.setPreferredSize(new Dimension(300, 30));
-        this.manageHotelBtn.setFocusable(false);
-		this.simulateBookingBtn = new JButton("Simulate Booking");
-		this.simulateBookingBtn.setPreferredSize(new Dimension(300, 30));
-        this.simulateBookingBtn.setFocusable(false);
-
-        this.mainFrame.add(createHotelBtn);
-        this.mainFrame.add(listHotelBtn);
-        this.mainFrame.add(manageHotelBtn);
-        this.mainFrame.add(simulateBookingBtn);
-
-        this.mainFrame.setVisible(true);
-    }
-
-    public void setCreateHotelBtnListener(ActionListener actionListener) {
-		this.createHotelBtn.addActionListener(actionListener);
-	}
-
-    public void setListHotelBtnListener(ActionListener actionListener) {
-		this.listHotelBtn.addActionListener(actionListener);
-	}
-
-    public void setManageHotelBtnListener(ActionListener actionListener) {
-		this.manageHotelBtn.addActionListener(actionListener);
-	}
-
-    public void setSimulateBookingBtnListener(ActionListener actionListener) {
-		this.simulateBookingBtn.addActionListener(actionListener);
-	}
-
-    //Getter for the Controller
-    public HotelController getController() {
-        return this.controller;
-    }
-
-    /**
-     * Sets the controller for this view to interact with the backend logic.
-     *
-     * @param controller The `HotelController` instance to set.
-     */
     public void setController(HotelController controller) {
         this.controller = controller;
     }
 
-    /**
-     * Displays a message indicating that a hotel with the given name
-     * was not found.
-     *
-     * @param hotelName The name of the hotel that was not found.
-     */
-    public void displayHotelNotFound(String hotelName) {
-        System.out.println("Hotel not found: " + hotelName);
+    public HotelView() {
+        
+        mainFrame = new JFrame("Hotel Reservation System");
+        mainFrame.setSize(400, 400);
+        mainFrame.setLayout(new GridLayout(4, 1));
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Initialize the hotels table
+        hotelsTable = new JTable(new DefaultTableModel(new Object[]{"Hotel Name", "Location", "Rating"}, 0));
+        JScrollPane scrollPane = new JScrollPane(hotelsTable);
+        mainFrame.add(scrollPane);
+
+         // Initialize the booked rooms table
+         bookedRoomsTable = new JTable(new DefaultTableModel(new Object[]{"Room Number", "Type", "Price", "Status"}, 0));
+         JScrollPane bookedRoomsScrollPane = new JScrollPane(bookedRoomsTable);
+         mainFrame.add(bookedRoomsScrollPane, BorderLayout.EAST);
+
+         // Initialize the labels
+         roomNumberLabel = new JLabel("Room Number: ");
+         priceLabel = new JLabel("Price: ");
+         statusLabel = new JLabel("Status: ");
+ 
+         // Adding labels to the main frame or a panel
+         JPanel labelPanel = new JPanel();
+         labelPanel.add(roomNumberLabel);
+         labelPanel.add(priceLabel);
+         labelPanel.add(statusLabel);
+ 
+         mainFrame.add(labelPanel, BorderLayout.SOUTH);
+
+        createHotelBtn = new JButton("Create Hotel");
+        listHotelBtn = new JButton("List Hotels");
+        manageHotelBtn = new JButton("Manage Hotel");
+        simulateBookingBtn = new JButton("Simulate Booking");
+
+        createHotelBtn.setPreferredSize(new Dimension(300, 30));
+        listHotelBtn.setPreferredSize(new Dimension(300, 30));
+        manageHotelBtn.setPreferredSize(new Dimension(300, 30));
+        simulateBookingBtn.setPreferredSize(new Dimension(300, 30));
+
+        createHotelBtn.setFocusable(false);
+        listHotelBtn.setFocusable(false);
+        manageHotelBtn.setFocusable(false);
+        simulateBookingBtn.setFocusable(false);
+
+        mainFrame.add(createHotelBtn);
+        mainFrame.add(listHotelBtn);
+        mainFrame.add(manageHotelBtn);
+        mainFrame.add(simulateBookingBtn);
+
+        mainFrame.setVisible(true);
+
+        // Add action listeners to the buttons
+        createHotelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addHotel();
+            }
+        });
+
+        listHotelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showListsHotelMenu();
+            }
+        });
+
+        manageHotelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showManageHotelMenu();
+            }
+        });
+
+        simulateBookingBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showSimulateBookingMenu();
+            }
+        });
+    }
+
+    private void showListsHotelMenu(){
+         // Create a new JFrame for Show Lists Hotel menu
+         JFrame manageFrame = new JFrame("Lists Hotel");
+         manageFrame.setSize(400, 400);
+         manageFrame.setLayout(new GridLayout(3, 1));
+ 
+         JButton showHotelDetailsBtn = new JButton("Show Hotel Details");
+         JButton estimateEarningBtn = new JButton("Estimate Earnings");
+         JButton showReservationDetailsBtn = new JButton("Show Reservation Details");
+    
+         manageFrame.add(showHotelDetailsBtn);
+         manageFrame.add(estimateEarningBtn);
+         manageFrame.add(showReservationDetailsBtn);
+
+         manageFrame.setVisible(true);
+
+
+         showHotelDetailsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getHotelDetails();
+            }
+        });
+
+        estimateEarningBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                estimateEarnings();
+            }
+        });
+
+        showReservationDetailsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showReservationDetails();
+            }
+        });
+    }
+
+    private void showManageHotelMenu() {
+        // Create a new JFrame for Manage Hotel menu
+        JFrame manageFrame = new JFrame("Manage Hotel");
+        manageFrame.setSize(400, 400);
+        manageFrame.setLayout(new GridLayout(7, 1));
+
+        JButton changeNameBtn = new JButton("Change Hotel Name");
+        JButton addRoomBtn = new JButton("Add a Room");
+        JButton removeRoomBtn = new JButton("Remove a Room");
+        JButton updateRoomPriceBtn = new JButton("Update Room Price");
+        JButton modifyPriceDayBtn = new JButton("Modify Price for a Day");
+        JButton modifyPriceRangeBtn = new JButton("Modify Price for a Range of Days");
+        JButton removeHotelBtn = new JButton("Remove a Hotel");
+
+        manageFrame.add(changeNameBtn);
+        manageFrame.add(addRoomBtn);
+        manageFrame.add(removeRoomBtn);
+        manageFrame.add(updateRoomPriceBtn);
+        manageFrame.add(modifyPriceDayBtn);
+        manageFrame.add(modifyPriceRangeBtn);
+        manageFrame.add(removeHotelBtn);
+
+        manageFrame.setVisible(true);
+
+        changeNameBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeHotelName();
+            }
+        });
+
+        addRoomBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                addRoomToHotel();
+            }
+        });
+
+        removeRoomBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeRoomFromHotel();
+            }
+        });
+
+        updateRoomPriceBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateRoomPrice();
+            }
+        });
+
+        modifyPriceDayBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modifyDatePrice();
+            }
+        });
+
+        modifyPriceRangeBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modifyDatePriceRange();
+            }
+        });
+
+        removeHotelBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeHotel();
+            }
+        });
+    }
+
+    private void showSimulateBookingMenu() {
+        // Create a new JFrame for Simulate Booking menu
+        JFrame bookingFrame = new JFrame("Simulate Booking");
+        bookingFrame.setSize(400, 400);
+        bookingFrame.setLayout(new GridLayout(6, 1));
+
+        JButton makeReservationBtn = new JButton("Make a Reservation");
+        JButton cancelReservationBtn = new JButton("Cancel a Reservation");
+        JButton listBookedRoomsBtn = new JButton("List Booked Rooms");
+        JButton listAvailableRoomsBtn = new JButton("List Available Rooms");
+        JButton showRoomCountsBtn = new JButton("Show Room Counts for a Date");
+        JButton showRoomInfoMonthBtn = new JButton("Show Room Info Across Month");
+
+        bookingFrame.add(makeReservationBtn);
+        bookingFrame.add(cancelReservationBtn);
+        bookingFrame.add(listBookedRoomsBtn);
+        bookingFrame.add(listAvailableRoomsBtn);
+        bookingFrame.add(showRoomCountsBtn);
+        bookingFrame.add(showRoomInfoMonthBtn);
+
+        bookingFrame.setVisible(true);
+
+        makeReservationBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                makeReservation();
+            }
+        });
+
+        cancelReservationBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelReservation();
+            }
+        });
+
+        listBookedRoomsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listBookedRooms();
+            }
+        });
+
+        listAvailableRoomsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listAvailableRooms();
+            }
+        });
+
+        showRoomCountsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showRoomCountsForDate();
+            }
+        });
+
+        showRoomInfoMonthBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showRoomInfoAcrossMonth();
+            }
+        });
     }
 
     /**
-     * Displays a message indicating that a room with the given number
-     * was not found.
-     *
-     * @param roomNumber The number of the room that was not found.
+     * METHOD FUNCTIONALITIES:
      */
-    public void displayRoomNotFound(int roomNumber) {
-        System.out.println("Room not found: " + roomNumber);
-    }
-
-    /**
-     * Displays a success message after performing an operation.
-     *
-     * @param interaction The type of interaction that was successful.
-     */
-    public void displaySuccess(String message) {
-        JOptionPane.showMessageDialog(null, message);
-    }
 
      /**
-     * Prompts the user to enter another item of a specified type.
-     *
-     * @param type The type of item the user is asked to enter.
+     * Adds a new hotel to the system based on user input.
      */
-    public void displayEnterAnother(String message) {
-        JOptionPane.showMessageDialog(null, "Please enter another " + message);
-    }
-
-
-    /**
-     * Displays a message indicating that the maximum number of rooms
-     * has been reached for a hotel.
-     */
-    public void displayMaxRooms() {
-        System.out.println("Maximum number of rooms reached.");
-    }
-
-     /**
-     * Displays a message indicating that the minimum number of rooms
-     * has been reached for a hotel.
-     */
-    public void displayMinRooms() {
-        System.out.println("Minimum number of rooms reached.");
-    }
-
-     /**
-     * Displays a list of hotels including their names, number of rooms,
-     * and number of reservations.
-     *
-     * @param hotels The list of `HotelModel` objects representing hotels
-     *               to be displayed.
-     */
-    public void displayHotels(List<HotelModel> hotels) {
-        if (hotels.isEmpty()) {
-            System.out.println("No hotels available.");
+    private void addHotel() {
+        String hotelName = JOptionPane.showInputDialog(mainFrame, "Enter hotel name:");
+        if (hotelName != null && !hotelName.trim().isEmpty()) {
+            controller.addHotel(hotelName.trim());
+            JOptionPane.showMessageDialog(mainFrame, "Hotel added: " + hotelName);
         } else {
-            System.out.println("List of Hotels:");
-            for (HotelModel hotel : hotels) {
-                System.out.println("Hotel Name: " + hotel.getHotelName());
-                System.out.println("Rooms: " + hotel.getRooms().size());
-                System.out.println("Reservations: " + hotel.getReservations().size());
-                System.out.println(); // Blank line between hotels for readability
+            JOptionPane.showMessageDialog(mainFrame, "Hotel name cannot be empty.");
+        }
+    }
+
+
+    private void getHotelDetails() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            displayHotelDetails(hotel);
+        }
+    }
+
+    private void estimateEarnings() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            double earnings = controller.estimateEarnings(hotel.getHotelName());
+            JOptionPane.showMessageDialog(mainFrame, "Estimated earnings for hotel " + hotel.getHotelName() + ": $" + earnings);
+        }
+    }
+
+    /**
+     * Displays detailed reservation information including hotel name, room number,
+     * guest name, check-in date, check-out date, total price, and price per night.
+     */
+    private void showReservationDetails() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                int checkInDate = getValidDate("Enter check-in date (1-31):");
+                int checkOutDate = getValidDate("Enter check-out date (1-31):");
+                while (checkOutDate < checkInDate) {
+                    JOptionPane.showMessageDialog(mainFrame, "Check-out date must be after check-in date.");
+                    checkOutDate = getValidDate("Enter check-out date (1-31):");
+                }
+                controller.getReservationDetails(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
+            }
+        }
+    }
+    /**
+     * Changes the name of a specified hotel based on user input.
+     */
+    private void changeHotelName() {
+        HotelModel hotel = validateHotelName("Enter current hotel name:");
+        if (hotel != null) {
+            String newHotelName = JOptionPane.showInputDialog(mainFrame, "Enter new hotel name:");
+            if (newHotelName != null && !newHotelName.trim().isEmpty()) {
+                controller.changeHotelName(hotel.getHotelName(), newHotelName.trim());
+                JOptionPane.showMessageDialog(mainFrame, "Hotel name changed to: " + newHotelName);
+            } else {
+                JOptionPane.showMessageDialog(mainFrame, "New hotel name cannot be empty.");
             }
         }
     }
 
-     /**
-     * Displays detailed information about a specific hotel, including
-     * its name, number of rooms, and number of reservations.
-     *
-     * @param hotel The `HotelModel` object representing the hotel to be
-     *              displayed.
+    // Method to add rooms to a hotel
+    private void addRoomToHotel() {
+        String hotelName = JOptionPane.showInputDialog(mainFrame, "Enter hotel name:");
+        if (hotelName == null || hotelName.trim().isEmpty()) {
+            displayError("Hotel name cannot be empty.");
+            return;
+        }
+
+        String roomNumberStr = JOptionPane.showInputDialog(mainFrame, "Enter room number:");
+        if (roomNumberStr == null || roomNumberStr.trim().isEmpty()) {
+            displayError("Room number cannot be empty.");
+            return;
+        }
+
+        int roomNumber;
+        try {
+            roomNumber = Integer.parseInt(roomNumberStr);
+        } catch (NumberFormatException e) {
+            displayError("Invalid room number.");
+            return;
+        }
+
+        String countStr = JOptionPane.showInputDialog(mainFrame, "Enter number of rooms to add:");
+        if (countStr == null || countStr.trim().isEmpty()) {
+            displayError("Number of rooms cannot be empty.");
+            return;
+        }
+
+        int count;
+        try {
+            count = Integer.parseInt(countStr);
+        } catch (NumberFormatException e) {
+            displayError("Invalid number of rooms.");
+            return;
+        }
+
+        int confirmation = JOptionPane.showConfirmDialog(mainFrame, "Are you sure you want to add " + count + " room(s) to hotel " + hotelName + "?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirmation == JOptionPane.YES_OPTION) {
+            controller.addRoomToHotel(hotelName, roomNumber, count);
+        }
+    }
+
+    private void removeRoomFromHotel() {
+        String hotelName = JOptionPane.showInputDialog(mainFrame, "Enter hotel name:");
+        if (hotelName == null) return; // User cancelled
+        HotelModel hotel = controller.findHotelByName(hotelName);
+        if (hotel == null) {
+            displayError("Hotel not found.");
+            return;
+        }
+
+        String roomNumberStr = JOptionPane.showInputDialog(mainFrame, "Enter room number:");
+        if (roomNumberStr == null) return; // User cancelled
+
+        int roomNumber;
+        try {
+            roomNumber = Integer.parseInt(roomNumberStr);
+        } catch (NumberFormatException e) {
+            displayError("Invalid room number.");
+            return;
+        }
+
+        Room room = hotel.getRoomByNumber(roomNumber);
+        if (room == null) {
+            displayError("Room not found.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(null, 
+                "Are you sure you want to remove room number " + room.getRoomNumber() + " from hotel: " + hotel.getHotelName() + "?",
+                "Confirm Removal", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean check = controller.removeRoomFromHotel(hotel.getHotelName(), room.getRoomNumber());
+            if (check) {
+                JOptionPane.showMessageDialog(null, "Removed room number " + room.getRoomNumber() + " from hotel: " + hotel.getHotelName());
+            } else {
+                displayError("Failed to remove room.");
+            }
+        }
+    }
+
+    /**
+     * Updates the price of rooms in a specified hotel based on user input.
      */
-    public void displayHotelDetails(HotelModel hotel) {
-        System.out.println("Hotel Details:");
-        System.out.println("Hotel Name: " + hotel.getHotelName());
-        System.out.println("Rooms: " + hotel.getRooms().size());
-        System.out.println("Reservations: " + hotel.getReservations().size());
-        System.out.println(); // Blank line for readability
+    private void updateRoomPrice() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                double newPrice = getValidDouble("Enter new room price:");
+                controller.updateRoomPrice(hotel.getHotelName(), room.getRoomNumber(), newPrice);
+                JOptionPane.showMessageDialog(mainFrame, "Room price updated: " + room.getRoomNumber() + " - $" + newPrice);
+            }
+        }
+    }
+
+    private void modifyDatePrice() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                int date = getValidDate("Enter date (1-31):");
+                double newPrice = getValidDouble("Enter new price for date " + date + ":");
+                controller.modifyPriceForADay(hotel.getHotelName(), room.getRoomNumber(), date, newPrice);
+                JOptionPane.showMessageDialog(mainFrame, "Price updated for date " + date + ": $" + newPrice);
+            }
+        }
+    }
+
+    private void modifyDatePriceRange() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                int startDate = getValidDate("Enter start date (1-31):");
+                int endDate = getValidDate("Enter end date (1-31):");
+                while (endDate < startDate) {
+                    JOptionPane.showMessageDialog(mainFrame, "End date must be after start date.");
+                    endDate = getValidDate("Enter end date (1-31):");
+                }
+                double newPrice = getValidDouble("Enter new price for range " + startDate + " to " + endDate + ":");
+                controller.modifyPriceForRange(hotel.getHotelName(), room.getRoomNumber(), startDate, endDate, newPrice);
+                JOptionPane.showMessageDialog(mainFrame, "Price updated for dates " + startDate + " to " + endDate + ": $" + newPrice);
+            }
+        }
+    }
+
+    /**
+     * Removes a hotel from the system based on user input.
+     */
+    private void removeHotel() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            controller.removeHotel(hotel.getHotelName());
+            JOptionPane.showMessageDialog(mainFrame, "Hotel removed: " + hotel.getHotelName());
+        }
     }
 
      /**
-     * Displays detailed information about a specific room, including
-     * its number, price, and booking status.
-     *
-     * @param room The `Room` object representing the room to be displayed.
+     * Makes a reservation for a room in a specified hotel based on user input.
      */
-    public void displayRoomDetails(Room room) {
-        System.out.println("Room Details:");
-        System.out.println("Room Number: " + room.getRoomNumber());
-        System.out.println("Room Type: " + room.getRoomType());
-        System.out.println("Price: $" + room.getPrice());
-        System.out.println("Status: " + (room.isBooked() ? "Booked" : "Available"));
-        System.out.println(); // Blank line for readability
+    private void makeReservation() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                int checkInDate = getValidDate("Enter check-in date (1-31):");
+                int checkOutDate = getValidDate("Enter check-out date (1-31):");
+                while (checkOutDate < checkInDate) {
+                    JOptionPane.showMessageDialog(mainFrame, "Check-out date must be after check-in date.");
+                    checkOutDate = getValidDate("Enter check-out date (1-31):");
+                }
+                String customerName = JOptionPane.showInputDialog(mainFrame, "Enter customer name:");
+                String discountCode = JOptionPane.showInputDialog(null, "Enter discount code (if any):");
+                if (customerName != null && !customerName.trim().isEmpty()) {
+                    controller.makeReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate, customerName.trim(), discountCode);
+                    JOptionPane.showMessageDialog(mainFrame, "Reservation made for " + customerName);
+                } else {
+                    JOptionPane.showMessageDialog(mainFrame, "Customer name cannot be empty.");
+                }
+            }
+        }
     }
 
-     /**
-     * Displays a list of booked rooms, showing their room numbers and prices.
-     *
-     * @param bookedRooms The list of `Room` objects representing booked rooms
-     *                    to be displayed.
+    /**
+     * Cancels a reservation for a room in a specified hotel based on user input.
      */
-    public void displayBookedRooms(List<Room> bookedRooms) {
-        if (bookedRooms != null && !bookedRooms.isEmpty()) {
-            System.out.println("Booked rooms:");
+    private void cancelReservation() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            Room room = validateRoomNumber(hotel, "Enter room number:");
+            if (room != null) {
+                int checkInDate = getValidDate("Enter check-in date (1-31):");
+                int checkOutDate = getValidDate("Enter check-out date (1-31):");
+                while (checkOutDate < checkInDate) {
+                    JOptionPane.showMessageDialog(mainFrame, "Check-out date must be after check-in date.");
+                    checkOutDate = getValidDate("Enter check-out date (1-31):");
+                }
+                controller.cancelReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
+                JOptionPane.showMessageDialog(mainFrame, "Reservation cancelled.");
+            }
+        }
+    }
+
+    /**
+     * Lists all rooms that are currently booked in a specified hotel based on user input.
+     */
+    private void listBookedRooms() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            int date = getValidDate("Enter date (1-31):");
+            List<Room> bookedRooms = controller.getBookedRooms(hotel.getHotelName(), date);
+            StringBuilder sb = new StringBuilder("Booked rooms on date " + date + ":\n");
             for (Room room : bookedRooms) {
-                System.out.println("Room Number: " + room.getRoomNumber() + ", Price: $" + room.getPrice());
+                sb.append("Room ").append(room.getRoomNumber()).append(": ").append("\n");
             }
-        } else {
-            System.out.println("No booked rooms found.");
+            JOptionPane.showMessageDialog(mainFrame, sb.toString());
         }
     }
 
-     /**
-     * Displays a list of available rooms, showing their room numbers and prices.
-     *
-     * @param availableRooms The list of `Room` objects representing available rooms
-     *                       to be displayed.
+
+    /**
+     * Lists all rooms that are currently available in a specified hotel based on user input.
      */
-    public void displayAvailableRooms(List<Room> availableRooms) {
-        if (availableRooms != null && !availableRooms.isEmpty()) {
-            System.out.println("Available rooms:");
+    private void listAvailableRooms() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            int date = getValidDate("Enter date (1-31):");
+            List<Room> availableRooms = controller.getAvailableRooms(hotel.getHotelName(), date);
+            StringBuilder sb = new StringBuilder("Available rooms on date " + date + ":\n");
             for (Room room : availableRooms) {
-                System.out.println("Room Number: " + room.getRoomNumber() + ", Price: $" + room.getPrice());
+                sb.append("Room ").append(room.getRoomNumber()).append(": ").append("\n");
             }
-        } else {
-            System.out.println("No available rooms found.");
+            JOptionPane.showMessageDialog(mainFrame, sb.toString());
         }
     }
 
@@ -240,22 +572,11 @@ public class HotelView {
      * in the context of a specific hotel.
      */
     private void showRoomCountsForDate() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        int date = 0;
-        
-        while (date<1 || date>31) {
-            System.out.print("Enter date (1-31) to check room counts: ");
-            date = scanner.nextInt();
-            if(date<1 || date>31)
-                displayEnterAnother("date within the specified range.");
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            int date = getValidDate("Enter date (1-31):");
+            controller.showRoomCountsForDate(hotel.getHotelName(), date);
         }
-
-        int availableCount = controller.getAvailableRoomsCount(hotel.getHotelName(), date, date);
-        int bookedCount = controller.getBookedRoomsCount(hotel.getHotelName(), date, date);
-
-        System.out.println("On " + date + ":");
-        System.out.println("Available rooms: " + availableCount);
-        System.out.println("Booked rooms: " + bookedCount);
     }
 
      /**
@@ -263,31 +584,133 @@ public class HotelView {
      * including availability status for each day.
      */
     private void showRoomInfoAcrossMonth() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        Room room = validateRoomNumber(hotel, "Enter room number: ");
-
-        // Display room details
-        displayRoomDetails(room);
-
-        // Display availability across the month
-        displayMonthlyAvailability(room);
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        if (hotel != null) {
+            int month = getValidMonth("Enter month (1-12):");
+            controller.showRoomInfoAcrossMonth(hotel.getHotelName(), month);
+        }
     }
 
-     /**
-     * Displays the availability status of a room across a month,
-     * showing whether the room is available or booked for each day.
+    /**
+     * Utility method to validate the existence of a hotel based on user input.
      *
-     * @param room The `Room` object for which availability is displayed.
+     * @param prompt The prompt message to display when requesting input.
+     * @return The validated `HotelModel` object corresponding to the hotel name entered by the user.
      */
-    private void displayMonthlyAvailability(Room room) {
-        System.out.println("Availability for " + room.getRoomName() + ":");
-        
-        for(int day=1;day<=31;day++)
-        {
-            String status = room.isAvailable(day, day) ? "Available" : "Booked";
-            System.out.println("Day " + day + ": " + status);
+    private HotelModel validateHotelName(String message) {
+        String hotelName = JOptionPane.showInputDialog(mainFrame, message);
+        if (hotelName == null || hotelName.trim().isEmpty()) {
+            return null; // User cancelled or entered empty value
         }
-        
+        HotelModel hotel = controller.findHotelByName(hotelName.trim());
+        if (hotel == null) {
+            JOptionPane.showMessageDialog(mainFrame, "Hotel not found.");
+        }
+        return hotel;
+    }
+    
+
+     /**
+     * Utility method to validate the existence of a room in a specified hotel based on user input.
+     *
+     * @param hotel The `HotelModel` object representing the hotel in which to validate the room.
+     * @param prompt The prompt message to display when requesting input.
+     * @return The validated `Room` object corresponding to the room number entered by the user.
+     */
+    private Room validateRoomNumber(HotelModel hotel, String message) {
+        String roomNumberStr = JOptionPane.showInputDialog(mainFrame, message);
+        if (roomNumberStr == null || roomNumberStr.trim().isEmpty()) {
+            return null; // User cancelled or entered empty value
+        }
+        int roomNumber;
+        try {
+            roomNumber = Integer.parseInt(roomNumberStr.trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(mainFrame, "Invalid room number.");
+            return null;
+        }
+        Room room = hotel.getRoomByNumber(roomNumber);
+        if (room == null) {
+            JOptionPane.showMessageDialog(mainFrame, "Room not found.");
+        }
+        return room;
+    }
+    
+    private int getValidDate(String message) {
+        while (true) {
+            String dateStr = JOptionPane.showInputDialog(mainFrame, message);
+            if (dateStr == null || dateStr.trim().isEmpty()) {
+                return -1; // User cancelled or entered empty value
+            }
+            try {
+                int date = Integer.parseInt(dateStr.trim());
+                if (date >= 1 && date <= 31) {
+                    return date;
+                }
+            } catch (NumberFormatException e) {
+                // Ignore and prompt again
+            }
+            JOptionPane.showMessageDialog(mainFrame, "Please enter a valid date between 1 and 31.");
+        }
+    }
+    
+
+    private int getValidMonth(String message) {
+        String monthStr;
+        int month;
+        while (true) {
+            monthStr = JOptionPane.showInputDialog(mainFrame, message);
+            try {
+                month = Integer.parseInt(monthStr);
+                if (month >= 1 && month <= 12) {
+                    return month;
+                } else {
+                    JOptionPane.showMessageDialog(mainFrame, "Month must be between 1 and 12.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(mainFrame, "Invalid month.");
+            }
+        }
+    }
+
+    private double getValidDouble(String message) {
+        String doubleStr;
+        double value;
+        while (true) {
+            doubleStr = JOptionPane.showInputDialog(mainFrame, message);
+            try {
+                value = Double.parseDouble(doubleStr);
+                return value;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(mainFrame, "Invalid number.");
+            }
+        }
+    }
+
+    /**
+     * Displays detailed information about a specific hotel, including
+     * its name, number of rooms, and number of reservations.
+     *
+     * @param hotel The `HotelModel` object representing the hotel to be
+     *              displayed.
+     */
+    public void displayHotelDetails(HotelModel hotel) {
+        JOptionPane.showMessageDialog(mainFrame,
+                "Hotel Details:\n" +
+                        "Hotel Name: " + hotel.getHotelName() + "\n" +
+                        "Rooms: " + hotel.getRooms().size() + "\n" +
+                        "Reservations: " + hotel.getReservations().size(),
+                "Hotel Details",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void displayReservationDetails(Reservation reservation, HotelModel hotel, Room room, int checkInDate, int checkOutDate) {
+        JOptionPane.showMessageDialog(mainFrame,
+                "Reservation details for room number: " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() + "\n" +
+                        "Check-in date: " + checkInDate + ", Check-out date: " + checkOutDate + "\n" +
+                        "Total price: $" + reservation.getTotalPrice(),
+                "Reservation Details",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -296,644 +719,105 @@ public class HotelView {
      * @return `true` if the user confirms changes, `false` otherwise.
      */
     private boolean confirmChanges() {
-        char c;
-        do{
-            System.out.print("Confirm changes? (Y/N) ");
-            c = scanner.next().charAt(0);
-        } while(c != 'Y' && c != 'N');
-
-        if(c == 'Y')
-                return true;
-            else
-                return false;
+        int response = JOptionPane.showConfirmDialog(mainFrame,
+                "Do you want to proceed with the changes?",
+                "Confirm Changes",
+                JOptionPane.YES_NO_OPTION);
+        return response == JOptionPane.YES_OPTION;
     }
-    /**
-     * Displays detailed reservation information including hotel name, room number,
-     * guest name, check-in date, check-out date, total price, and price per night.
-     */
-    public void showReservationDetails() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        Room room = validateRoomNumber(hotel, "Enter room number: ");
-        int checkInDate;
-        int checkOutDate;
+
+    private String getDiscountCode() {
+        return JOptionPane.showInputDialog(mainFrame,
+                "Enter discount code (or press Enter to skip):",
+                "Discount Code",
+                JOptionPane.PLAIN_MESSAGE);
+    }
+
+    public void displayHotels(List<HotelModel> hotels) {
+        DefaultTableModel model = (DefaultTableModel) hotelsTable.getModel();
+        model.setRowCount(0); // Clear existing rows
     
-        do {
-            System.out.print("Enter check-in date (1-31): ");
-            checkInDate = scanner.nextInt();
-            if (checkInDate < 1 || checkInDate > 31)
-                displayEnterAnother("date within the specified range.");
-        } while (checkInDate < 1 || checkInDate > 31);
-    
-        do {
-            System.out.print("Enter check-out date (1-31): ");
-            checkOutDate = scanner.nextInt();
-            if (checkOutDate < 1 || checkOutDate > 31)
-                displayEnterAnother("date within the specified range.");
-            else if (checkOutDate < checkInDate)
-                displayEnterAnother("date.\nCheck-out date must be after check-in date.");
-        } while (checkOutDate < 1 || checkOutDate > 31 || checkOutDate < checkInDate);
-    
-        // Retrieve reservation details from controller
-        Reservation reservation = controller.getReservationDetails(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
-    
-        if (reservation != null) {
-            // Calculate and set total price
-            reservation.calculateTotalPrice(hotel);
-    
-            System.out.println("\nReservation Details:");
-            System.out.println("Hotel Name: " + hotel.getHotelName());
-            System.out.println("Room Number: " + room.getRoomNumber());
-            System.out.println("Room Type: " + room.getRoomType());
-            System.out.println("Guest Name: " + reservation.getGuestName());
-            System.out.println("Check-in Date: " + checkInDate);
-            System.out.println("Check-out Date: " + checkOutDate);
-            System.out.println("Total Price: $" + reservation.getTotalPrice());
-            //System.out.println("Price per night: $" + reservation.getPricePerNight());
+        if (hotels.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "No hotels available.");
         } else {
-            System.out.println("No reservation found for room number " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() +
-                    " from " + checkInDate + " to " + checkOutDate);
+            for (HotelModel hotel : hotels) {
+                model.addRow(new Object[]{
+                    hotel.getHotelName(),
+                    hotel.getRooms().size(),
+                    hotel.getReservations().size()
+                });
+            }
         }
-    } 
+    }
 
-    /**
-     * Starts the hotel reservation system and displays a dynamic menu based on the
-     * existence of hotels and user input choices. Allows users to create hotels,
-     * view hotel details, manage hotels, simulate bookings, and exit the system.
-     */
-    public void start() {
-        while (true) {
-            System.out.println("\nHotel Reservation System");
+    public void displayRoomDetails(Room room) {
+        roomNumberLabel.setText("Room Number: " + room.getRoomNumber());
+        priceLabel.setText("Price: $" + room.getPrice());
+        statusLabel.setText("Status: " + (room.isBooked() ? "Booked" : "Available"));
+    }
 
-            // Dynamic menu based on hotel existence
-            if (controller.getHotels().isEmpty()) {
-                System.out.println("1. Create hotel");
-                System.out.println("2. List Hotels");
-            } 
-            else { 
-                System.out.println("\n1. Create hotel");
-                System.out.println("2. View Hotel");
-                System.out.println("3. Manage Hotel");
-                System.out.println("4. Simulate Booking");
-                System.out.println("5. Exit");
-            }
-
-            int choice = getValidatedIntInput("Enter your choice: ", 1, 5);
-            scanner.nextLine(); // consume newline
-
-            switch(choice) {
-                case 1:
-                    addHotel();
-                    break;
-                case 2:
-                case 3:
-                case 4:
-                    break;
-                case 5:
-                    System.out.println("Exiting...");
-                    scanner.close();
-                    return;
-                default:
-                    System.out.println("Invalid choice, please try again.");
-            }
-
-            // View Hotel
-            if(choice == 2) {
-                System.out.println("\n1. Show hotel details");
-                System.out.println("2. Estimate earnings for a hotel");
-                System.out.println("3. Show reservation details");
-                System.out.println("4. Back to main menu");
-
-                int choice2 = getValidatedIntInput("Enter your choice: ", 1, 4);
-                scanner.nextLine(); // consume newline
-
-                switch(choice2) {
-                    case 1:
-                        if (!controller.getHotels().isEmpty()) {
-                            getHotelDetails();
-                        } else {
-                            System.out.println("No hotels available. Please add a hotel first.");
-                        }
-                        break;
-                    case 2:
-                        if (!controller.getHotels().isEmpty()) {
-                            estimateEarnings();
-                        } else {
-                            System.out.println("No hotels available. Please add a hotel first.");
-                        }
-                        break;
-                    case 3:
-                        if (areAnyRoomsAvailable()) {
-                            showReservationDetails(); // Call the new method
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 4:
-                        break;
-                    default:
-                        System.out.println("Invalid choice, please try again.");
-                }
-            } 
-            
-            // Manage Hotel
-            else if(choice==3) {
-                System.out.println("\n1. Change hotel name");
-                System.out.println("2. Add a room to a hotel");
-                System.out.println("3. Remove a room from a hotel");
-                System.out.println("4. Update room price");
-                System.out.println("5. Modify price for a certain day");
-                System.out.println("6. Modify price for a range of days");
-                System.out.println("7. Remove a hotel");
-                System.out.println("8. List hotels");
-                System.out.println("9. Back to main menu");
-
-                int choice3 = getValidatedIntInput("Enter your choice: ", 1, 7);
-                scanner.nextLine(); // consume newline
-
-                switch(choice3) {
-                    case 1:
-                        if (!controller.getHotels().isEmpty()) {
-                            changeHotelName();
-                        } else {
-                            System.out.println("No hotels available. Please add a hotel first.");
-                        }
-                        break;
-                    case 2:
-                        if (controller.getHotels().isEmpty()) {
-                            System.out.println("No hotels available. Please add a hotel first.");
-                        } else {
-                            addRoomToHotel();
-                        }
-                        break;
-                    case 3:
-                        if (areAnyRoomsAvailable()) {
-                            removeRoomFromHotel();
-                        } else {
-                            System.out.println("No rooms available to remove. Please add a room first.");
-                        }
-                        break;
-                    case 4:
-                        if (areAnyRoomsAvailable()) {
-                            updateRoomPrice();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 5:
-                        if (areAnyRoomsAvailable()) {
-                            modifyDatePrice();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 6:
-                        if (areAnyRoomsAvailable()) {
-                            modifyDatePriceRange();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 7:
-                        if (controller.getHotels().isEmpty()) {
-                            listHotels();
-                        } else {
-                            removeHotel();
-                        }
-                        break;
-                    case 8:
-                        listHotels();
-                        break;
-                    case 9:
-                        break;
-                    default:
-                        System.out.println("Invalid choice, please try again.");
-                }
-            } // Simulate Booking
-            else if(choice==4) {
-                System.out.println("\n1. Make a reservation");
-                System.out.println("2. Cancel a reservation");
-                System.out.println("3. List booked rooms in a hotel");
-                System.out.println("4. List available rooms in a hotel");
-                System.out.println("5. Show room counts for a date");
-                System.out.println("6. Show selected room info across the month");
-                System.out.println("7. Back to main menu");
-
-                int choice4 = getValidatedIntInput("Enter your choice: ", 1, 7);
-                scanner.nextLine(); // consume newline
-
-                switch(choice4) {
-                    case 1:
-                        if (areAnyRoomsAvailable()) {
-                            makeReservation();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 2:
-                        if (areAnyRoomsAvailable()) {
-                            cancelReservation();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 3:
-                        if (areAnyRoomsAvailable()) {
-                            listBookedRooms();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 4:
-                        if (areAnyRoomsAvailable()) {
-                            listAvailableRooms();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 5:
-                        if (!controller.getHotels().isEmpty()) {
-                            showRoomCountsForDate(); // Call the new method
-                        } else {
-                            System.out.println("No hotels available. Please add a hotel first.");
-                        }
-                        break;
-                    case 6:
-                        if (areAnyRoomsAvailable()) {
-                            showRoomInfoAcrossMonth();
-                        } else {
-                            System.out.println("No rooms available. Please add a room first.");
-                        }
-                        break;
-                    case 7:
-                        break;
-                    default:
-                        System.out.println("Invalid choice, please try again.");
-                }
+    public void displayBookedRooms(List<Room> bookedRooms) {
+        DefaultTableModel model = (DefaultTableModel) bookedRoomsTable.getModel();
+        model.setRowCount(0); // Clear existing rows
+    
+        if (bookedRooms.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "No booked rooms found.");
+        } else {
+            for (Room room : bookedRooms) {
+                model.addRow(new Object[]{
+                    room.getRoomNumber(),
+                    room.getPrice()
+                });
             }
         }
     }
     
-    /**
-     * Checks if any rooms are available in any hotel managed by the system.
-     *
-     * @return `true` if there are rooms available in any hotel, `false` otherwise.
-     */
-    private boolean areAnyRoomsAvailable() {
+    public boolean areAnyRoomsAvailable() {
         for (HotelModel hotel : controller.getHotels()) {
             if (!hotel.getRooms().isEmpty()) {
                 return true;
             }
         }
         return false;
-    }    
-
-    /**
-     * Utility method to validate the existence of a hotel based on user input.
-     *
-     * @param prompt The prompt message to display when requesting input.
-     * @return The validated `HotelModel` object corresponding to the hotel name entered by the user.
-     */
-    private HotelModel validateHotelName(String prompt) {
-        HotelModel hotel;
-        while (true) {
-            System.out.print(prompt);
-            String hotelName = scanner.nextLine();
-            hotel = controller.getHotel(hotelName);
-            if (hotel == null) {
-                displayEnterAnother("hotel name.");
-            } else {
-                break;
-            }
-        }
-        return hotel;
     }
 
-   /**
-     * Utility method to validate the existence of a room in a specified hotel based on user input.
-     *
-     * @param hotel The `HotelModel` object representing the hotel in which to validate the room.
-     * @param prompt The prompt message to display when requesting input.
-     * @return The validated `Room` object corresponding to the room number entered by the user.
+    /*
+     * DISPLAY MESSAGES:
      */
-    private Room validateRoomNumber(HotelModel hotel, String prompt) {
-        Room room;
-        while (true) {
-            System.out.print(prompt);
-            int roomNumber = scanner.nextInt();
-            scanner.nextLine(); // consume newline
-            room = hotel.getRoom(roomNumber);
-            if (room == null) {
-                displayRoomNotFound(roomNumber);
-                displayEnterAnother("room number");
-            } else {
-                break;
-            }
-        }
-        return room;
-    }
-
-    /**
-     * Utility method to get validated integer input within a specified range from the user.
-     *
-     * @param prompt The prompt message to display when requesting input.
-     * @param minValue The minimum allowed integer value (inclusive).
-     * @param maxValue The maximum allowed integer value (inclusive).
-     * @return The validated integer input from the user within the specified range.
-     */
-    private int getValidatedIntInput(String prompt, int minValue, int maxValue) {
-        int input = -1;
-        boolean isValid = false;
-
-        while (!isValid) {
-            try {
-                System.out.print(prompt);
-                input = scanner.nextInt();
-                
-                if (input < minValue || input > maxValue) {
-                    throw new InputMismatchException();
-                }
-                isValid = true;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
-                scanner.next(); // Clear the invalid input
-            }
-        }
-
-        return input;
-    }
-
-    /**
-     * Utility method to get validated double input from the user.
-     *
-     * @param prompt The prompt message to display when requesting input.
-     * @return The validated double input from the user.
-     */
-    private double getValidatedDoubleInput(String prompt) {
-        double input = -1;
-        boolean isValid = false;
-
-        while (!isValid) {
-            try {
-                System.out.print(prompt);
-                input = scanner.nextDouble();
-                isValid = true;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next(); // Clear the invalid input
-            }
-        }
-
-        return input;
-    }
-
-     /**
-     * Displays detailed information about a specific hotel based on user input.
-     */
-    private void getHotelDetails(){
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        displayHotelDetails(hotel);
-    }
-
-     /**
-     * Adds a new hotel to the system based on user input.
-     */
-    private void addHotel() {
-        System.out.print("Enter hotel name: ");
-        String hotelName = scanner.nextLine();
-        controller.addHotel(hotelName);
-    }
-
-     /**
-     * Removes a hotel from the system based on user input.
-     */
-    private void removeHotel() {
-        HotelModel hotel = validateHotelName("Enter hotel name to remove: ");
-        boolean confirm = confirmChanges();
-        if(confirm){
-            boolean check = controller.removeHotel(hotel.getHotelName());
-            if(check)
-                System.out.println("Removed hotel: " + hotel.getHotelName());
-        }
-    }
-
-     /**
-     * Adds rooms to a specified hotel based on user input.
-     */
-    private void addRoomToHotel() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        System.out.print("Enter room number: ");
-        int roomNumber = scanner.nextInt();
-        System.out.print("Enter room type: ");
-        scanner.nextLine(); // consume newline
-        String roomType = scanner.nextLine();
-        System.out.print("Enter number of rooms to add: ");
-        int count = scanner.nextInt();
-
-        scanner.nextLine(); // consume newline
-        boolean confirm = confirmChanges();
-        if(confirm)
-            controller.addRoomToHotel(hotel.getHotelName(), roomNumber, roomType, count);
-    }
-
-     /**
-     * Removes a room from a specified hotel based on user input.
-     */
-    private void removeRoomFromHotel() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        Room room = validateRoomNumber(hotel, "Enter room number to remove: ");
-        boolean confirm = confirmChanges();
-        if(confirm){
-            boolean check = controller.removeRoomFromHotel(hotel.getHotelName(), room.getRoomNumber());
-            if(check)
-                System.out.println("Removed room number " + room.getRoomNumber() + " from hotel: " + hotel.getHotelName());
-        }
-    }
-
-    /**
-     * Updates the price of rooms in a specified hotel based on user input.
-     */
-    private void updateRoomPrice() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        System.out.print("Enter new room price: ");
-        double newPrice = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
-        boolean confirm = confirmChanges();
-        if(confirm)
-            controller.updateRoomPrice(hotel.getHotelName(), newPrice);
-    }
-
-    /**
-     * Modifies the price of a reserved day in a specified hotel based on user inputted percentage.
-     */
-    private void modifyDatePrice() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        System.out.print("Enter day to modify (1-31): ");
-        int day = scanner.nextInt();
-        System.out.print("Enter price rate (50-150): ");
-        int priceRate = scanner.nextInt();
-        if(day>31 || day<1)
-            displayEnterAnother("day.");
-        else if(priceRate > 150 || priceRate < 50)
-            displayEnterAnother("price.");
-        else{
-            scanner.nextLine(); // consume newline
-            boolean confirm = confirmChanges();
-            if(confirm){
-                controller.datePriceModifier(hotel, day, priceRate);
-                displaySuccess("Price modified for day " + day);
-            }
-        }
-    }
-
-    /**
-     * Modifies the price of a range of reserved days in a specified hotel based on user inputted percentage.
-     */
-    private void modifyDatePriceRange() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        System.out.print("Enter first day to modify (1-31): ");
-        int day1 = scanner.nextInt();
-        System.out.print("Enter last day to modify (1-31): ");
-        int day2 = scanner.nextInt();
-        System.out.print("Enter price rate (50-150): ");
-        int priceRate = scanner.nextInt();
-        if(day1>31 || day1<1)
-            displayEnterAnother("initial day.");
-        else if(day2>31 || day2<1 || day2<day1)
-            displayEnterAnother("final day.");
-        else if(priceRate > 150 || priceRate < 50)
-            displayEnterAnother("price.");
-        else{
-            scanner.nextLine(); // consume newline
-            boolean confirm = confirmChanges();
-            if(confirm){
-                controller.datePriceModifier(hotel, day1, day2, priceRate);
-                displaySuccess("Price modified for days " + day1 + "-" + day2);
-            }
-        }
-    }
-
-    /**
-     * Changes the name of a specified hotel based on user input.
-     */
-    private void changeHotelName() {
-        HotelModel hotel = validateHotelName("Enter old hotel name: ");
-        System.out.print("Enter new hotel name: ");
-        String newName = scanner.nextLine();
-        String oldName = hotel.getHotelName();
-        boolean confirm = confirmChanges();
-        if(confirm){
-            boolean check = controller.changeHotelName(hotel.getHotelName(), newName);
-            if(check){
-                System.out.println("Changed hotel name from " + oldName + " to " + newName);
-                hotel = controller.getHotel(newName);
-                if (hotel != null) {
-                    displayHotelDetails(hotel);
-                }
-            }
-        }
-    }
-
-     /**
-     * Estimates the earnings of a specified hotel based on user input.
-     */
-    private void estimateEarnings() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        double earnings = controller.estimateEarnings(hotel.getHotelName());
-        System.out.println("Estimated earnings for hotel " + hotel.getHotelName() + ": $" + earnings);
-    }
-
-    /**
-     * Lists all rooms that are currently booked in a specified hotel based on user input.
-     */
-    private void listBookedRooms() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        List<Room> bookedRooms = controller.getBookedRooms(hotel.getHotelName());
-        displayBookedRooms(bookedRooms);
-    }
-
-    /**
-     * Lists all rooms that are currently available in a specified hotel based on user input.
-     */
-    private void listAvailableRooms() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        List<Room> availableRooms = controller.getAvailableRooms(hotel.getHotelName());
-        displayAvailableRooms(availableRooms);
-    }
-
-      /**
-     * Makes a reservation for a room in a specified hotel based on user input.
-     */
-    private void makeReservation() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        Room room = validateRoomNumber(hotel, "Enter room number: ");
-        System.out.print("Enter guest name: ");
-        String guestName = scanner.nextLine();
-        int checkInDate;
-        int checkOutDate;
     
-        do {
-            System.out.print("Enter check-in date (1-31): ");
-            checkInDate = scanner.nextInt();
-            if (checkInDate < 1 || checkInDate > 31) {
-                displayEnterAnother("date within the specified range.");
-            }
-        } while (checkInDate < 1 || checkInDate > 31);
-    
-        do {
-            System.out.print("Enter check-out date (1-31): ");
-            checkOutDate = scanner.nextInt();
-            if (checkOutDate < 1 || checkOutDate > 31) {
-                displayEnterAnother("date within the specified range.");
-            } else if (checkOutDate < checkInDate) {
-                displayEnterAnother("date.\nCheck-out date must be after check-in date.");
-            }
-        } while (checkOutDate < 1 || checkOutDate > 31 || checkOutDate < checkInDate);
-    
-        scanner.nextLine(); // Consume the newline left-over
-        System.out.print("Enter discount code (or leave blank): ");
-        String discountCode = scanner.nextLine();
-    
-        controller.makeReservation(hotel.getHotelName(), room.getRoomNumber(), guestName, checkInDate, checkOutDate, discountCode);
-    }    
-
-    /**
-     * Cancels a reservation for a room in a specified hotel based on user input.
-     */
-    private void cancelReservation() {
-        HotelModel hotel = validateHotelName("Enter hotel name: ");
-        Room room = validateRoomNumber(hotel, "Enter room number: ");
-        int checkInDate;
-        int checkOutDate;
-
-        do{
-            System.out.print("Enter check-in date (1-31): ");
-            checkInDate = scanner.nextInt();
-            if(checkInDate<1 || checkInDate>31)
-                displayEnterAnother("date within the specified range.");
-        }
-        while (checkInDate<1 || checkInDate>31);
-
-        do{
-            System.out.print("Enter check-out date (1-31): ");
-            checkOutDate = scanner.nextInt();
-            if(checkOutDate<1 || checkOutDate>31)
-                displayEnterAnother("date within the specified range.");
-            else if(checkOutDate<checkInDate)
-                displayEnterAnother("date.\nCheck-out date must be after check-in date.");
-        }
-        while (checkOutDate<1 || checkOutDate>31 || checkOutDate<checkInDate);
-
-        controller.cancelReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
-        System.out.println("Cancelled reservation for room number " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() +
-                           " from " + checkInDate + " to " + checkOutDate);
-        displayRoomDetails(room);
+     // Method to prompt the user to enter another value
+     public void displayEnterAnother(String field) {
+        JOptionPane.showMessageDialog(mainFrame, "Please enter another " + field);
     }
 
-    /**
-     * Lists all hotels currently managed by the system.
-     */
-    private void listHotels() {
-        List<HotelModel> hotels = controller.getHotels();
-        displayHotels(hotels);
+     // Method to display a success message
+     public void displaySuccess(String message) {
+        JOptionPane.showMessageDialog(null, message);
     }
+
+    // Method to display an error message for hotel not found
+    public void displayHotelNotFound(String hotelName) {
+        JOptionPane.showMessageDialog(null, "Hotel not found: " + hotelName, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Method to display a message when the maximum number of rooms is reached
+    public void displayMaxRooms() {
+        JOptionPane.showMessageDialog(null, "Maximum number of rooms reached.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Method to display a message when the minimum number of rooms is reached
+    public void displayMinRooms() {
+        JOptionPane.showMessageDialog(null, "Minimum number of rooms reached.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+     // Method to display an error message for room not found
+    public void displayRoomNotFound(int roomNumber) {
+        JOptionPane.showMessageDialog(null, "Room not found: " + roomNumber, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Method to display error messages
+    private void displayError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
 }

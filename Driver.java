@@ -14,8 +14,5 @@ public class Driver {
 
         // Set the controller in the view
         view.setController(controller);
-
-        // Start the user interface
-        view.start();
     }
 }

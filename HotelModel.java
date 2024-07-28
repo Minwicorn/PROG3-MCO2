@@ -263,4 +263,13 @@ public class HotelModel {
         this.dayModifier[day-1] = modifier;
     }
 
+    public Room getRoomByNumber(int roomNumber) {
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == roomNumber) {
+                return room;
+            }
+        }
+        return null; // Room not found
+    }
+
 }

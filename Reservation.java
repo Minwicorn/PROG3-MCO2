@@ -26,6 +26,8 @@ public class Reservation {
         this.roomNumber = roomNumber;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
+        this.discountCode = discountCode;
+
     }
 
     /**

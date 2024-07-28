@@ -1,10 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 /**
  * The HotelController class manages operations related to hotels and rooms,
@@ -33,68 +29,10 @@ public class HotelController {
         this.view.setController(this); // Set the controller in the view
         this.hotels = new ArrayList<>();
         this.reservations = new ArrayList<>();
-
-        // implement button listeners here
-
-        // WHEN "CREATE HOTEL" BUTTON IS PRESSED
-        this.view.setCreateHotelBtnListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-                JTextField hotelNameField = new JTextField();
-                Object[] message = {
-                    "Hotel Name:", hotelNameField
-                };
-        
-                int option = JOptionPane.showConfirmDialog(null, message, "Create Hotel", JOptionPane.OK_CANCEL_OPTION);
-                if (option == JOptionPane.OK_OPTION) {
-                    String hotelName = hotelNameField.getText();
-                    if (hotelName != null && !hotelName.isEmpty()) {
-                        view.getController().addHotel(hotelName);
-                        JOptionPane.showMessageDialog(null, "Hotel created successfully!");
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Hotel name cannot be empty.");
-                    }
-                }
-            }
-        });
-
-        // WHEN "LIST HOTELS" BUTTON IS PRESSED
-        this.view.setListHotelBtnListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-                System.out.println("list hotels selected");
-            }
-        });
-
-        // WHEN "MANAGE HOTEL" BUTTON IS PRESSED
-        this.view.setManageHotelBtnListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-                if (getHotels().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No hotels available. Please add a hotel first.");
-                } 
-                else {
-                    System.out.println("manage hotel selected");
-                }
-            }
-        });
-
-        // WHEN "SIMULATE BOOKING" BUTTON IS PRESSED
-        this.view.setSimulateBookingBtnListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { 
-                if (getHotels().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "No hotels available. Please add a hotel first.");
-                }
-                else {
-                    System.out.println("simulate booking selected");
-                }
-            }
-        });
     }
 
     // Helper Method to find a hotel by name
-    private HotelModel findHotelByName(String hotelName) {
+    public HotelModel findHotelByName(String hotelName) {
         for (HotelModel hotel : hotels) {
             if (hotel.getHotelName().equalsIgnoreCase(hotelName)) {
                 return hotel;
@@ -117,7 +55,7 @@ public class HotelController {
             HotelModel newHotel = new HotelModel(hotelName);
             hotels.add(newHotel);
             view.displaySuccess("Added hotel " + hotelName);
-            addRoomToHotel(hotelName, 101,"Standard" , 1);
+            addRoomToHotel(hotelName, 101, 1);
             view.displayHotelDetails(newHotel);
         }
     }
@@ -154,7 +92,7 @@ public class HotelController {
      * @param roomNumber Starting room number of the first room to be added
      * @param count      Number of rooms to be added
      */
-    public void addRoomToHotel(String hotelName, int roomNumber, String roomType, int count) {
+    public void addRoomToHotel(String hotelName, int roomNumber, int count) {
         int successes = 0;
         
         HotelModel hotel = findHotelByName(hotelName);
@@ -164,16 +102,15 @@ public class HotelController {
             {
                 view.displayMaxRooms();
                 return;
-            } else if(room == null && (roomType.equals("Standard") || roomType.equals("Deluxe") || roomType.equals("Executive"))) 
-            {
+            } else if(room == null) {
                 for(int i=0;i<count;i++){
-                    successes += addRoomToHotel(hotelName, roomNumber+i, roomType, DEFAULT_ROOM_PRICE);
+                    successes += addRoomToHotel(hotelName, roomNumber+i, DEFAULT_ROOM_PRICE);
                 }
                 view.displaySuccess("Added " + successes + " room(s)");
                 return;
             }
             else {
-                view.displayEnterAnother("room number or appropriate type of room.");
+                view.displayEnterAnother("room number.");
             }
         }
     }
@@ -187,17 +124,12 @@ public class HotelController {
      * @param price      Price of the room to be added
      * @return 1 if the room was successfully added, 0 otherwise
      */
-    public int addRoomToHotel(String hotelName, int roomNumber, String roomType, double price) {
+    public int addRoomToHotel(String hotelName, int roomNumber, double price) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
             if (room == null) {
-                if(roomType.equals("Deluxe"))
-                    hotel.addRoom((Room)new Deluxe(roomNumber, price));
-                else if(roomType.equals("Executive"))
-                    hotel.addRoom((Room)new Executive(roomNumber, price));
-                else if(roomType.equals("Standard"))
-                    hotel.addRoom(new Room(roomNumber, price));
+                hotel.addRoom(new Room(roomNumber, price));
                 view.displaySuccess("Room "+ roomNumber + " added");
                 return 1;
             } else {
@@ -248,7 +180,7 @@ public class HotelController {
      * @param hotelName Name of the hotel whose room prices are to be updated
      * @param newPrice  New price for the rooms in the hotel
      */
-    public void updateRoomPrice(String hotelName, double newPrice) {
+    public void updateRoomPrice(String hotelName, int roomNumber, double newPrice) {
         if (newPrice < 100) {
             view.displayEnterAnother("price. Must be greater than 100.0.");
             return;
@@ -316,7 +248,7 @@ public class HotelController {
      * @param hotelName Name of the hotel for which booked rooms are to be retrieved
      * @return List of booked rooms in the hotel
      */
-    public List<Room> getBookedRooms(String hotelName) {
+    public List<Room> getBookedRooms(String hotelName, int date) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             List<Room> bookedRooms = new ArrayList<>();
@@ -338,7 +270,7 @@ public class HotelController {
      * @param hotelName Name of the hotel for which available rooms are to be retrieved
      * @return List of available rooms in the hotel
      */
-    public List<Room> getAvailableRooms(String hotelName) {
+    public List<Room> getAvailableRooms(String hotelName, int date) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             List<Room> availableRooms = new ArrayList<>();
@@ -409,7 +341,7 @@ public class HotelController {
      * @param checkInDate Check-in date for the reservation
      * @param checkOutDate Check-out date for the reservation
      */
-    public void makeReservation(String hotelName, int roomNumber, String guestName, int checkInDate, int checkOutDate, String discountCode) {
+    public void makeReservation(String hotelName, int roomNumber, int checkInDate, int checkOutDate, String guestName, String discountCode) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
@@ -580,6 +512,70 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
     public void datePriceModifier(HotelModel hotel, int day1, int day2, int percent){
         for(int i=day1;i<=day2;i++){
             datePriceModifier(hotel,i,percent);
+        }
+    }
+
+    public boolean modifyPriceForADay(String hotelName, int roomNumber, int date, double newPrice) {
+        HotelModel hotel = findHotelByName(hotelName);
+        if (hotel != null) {
+            Room room = hotel.getRoomByNumber(roomNumber);
+            if (room != null) {
+                return room.modifyPriceForADay(date, newPrice);
+            }
+        }
+        return false;
+    }
+
+    public boolean modifyPriceForRange(String hotelName, int roomNumber, int startDate, int endDate, double newPrice) {
+        HotelModel hotel = findHotelByName(hotelName);
+        if (hotel != null) {
+            Room room = hotel.getRoomByNumber(roomNumber);
+            if (room != null) {
+                return room.modifyPriceForRange(startDate, endDate, newPrice);
+            }
+        }
+        return false;
+    }
+
+    public void showRoomCountsForDate(String hotelName, int date) {
+        HotelModel hotel = findHotelByName(hotelName);
+        if (hotel != null) {
+            int availableRooms = 0;
+            int bookedRooms = 0;
+            for (Room room : hotel.getRooms()) {
+                if (room.isBookedOnDate(date)) {
+                    bookedRooms++;
+                } else {
+                    availableRooms++;
+                }
+            }
+            // Show counts in any desired way, e.g., logging, returning values, or updating GUI
+            System.out.println("Available rooms: " + availableRooms);
+            System.out.println("Booked rooms: " + bookedRooms);
+        } else {
+            System.out.println("Hotel not found.");
+        }
+    }
+
+    public void showRoomInfoAcrossMonth(String hotelName, int month) {
+        HotelModel hotel = findHotelByName(hotelName);
+        if (hotel != null) {
+            StringBuilder sb = new StringBuilder("Room information for the month:\n");
+            for (Room room : hotel.getRooms()) {
+                sb.append("Room ").append(room.getRoomNumber()).append(":\n");
+                for (int day = 1; day <= 31; day++) { // Assuming a maximum of 31 days in a month
+                    sb.append("  Day ").append(day).append(": ");
+                    if (room.isBookedOnDate(day)) {
+                        sb.append("Booked\n");
+                    } else {
+                        sb.append("Available\n");
+                    }
+                }
+            }
+            // Show the information using the desired method, e.g., logging, returning values, or updating GUI
+            System.out.println(sb.toString());
+        } else {
+            System.out.println("Hotel not found.");
         }
     }
 }

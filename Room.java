@@ -1,14 +1,17 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Represents a standard room at the hotel
+ * Represents a room at the hotel
  */
 public class Room {
-    protected int roomNumber;
-    protected double price;
-    protected boolean isBooked;
-    protected List<Reservation> reservations;
+    private int roomNumber;
+    private double price;
+    private boolean isBooked;
+    private List<Reservation> reservations;
+    private Map<Integer, Double> dailyPrices;
 
     /**
      * Constructs a room with a room number and a price
@@ -21,6 +24,7 @@ public class Room {
         this.price = price;
         this.isBooked = false;
         this.reservations = new ArrayList<>();
+        this.dailyPrices = new HashMap<>();
     }
 
     // Getter and Setter methods for roomNumber, price, and isBooked
@@ -174,22 +178,21 @@ public class Room {
     
         return availableRooms;
     }
+
+    public boolean modifyPriceForADay(int date, double newPrice) {
+        dailyPrices.put(date, newPrice);
+        return true;
+    }
+
+    public boolean modifyPriceForRange(int startDate, int endDate, double newPrice) {
+        for (int date = startDate; date <= endDate; date++) {
+            dailyPrices.put(date, newPrice);
+        }
+        return true;
+    }
     
     // Optionally, you can add a method to get room name if applicable.
     public String getRoomName() {
         return "Room " + roomNumber;
-    }
-
-    /**
-     * 
-     * @return the type of room as a string
-     */
-    public String getRoomType() {
-        if (this instanceof Deluxe)
-            return "Deluxe";
-        else if (this instanceof Executive)
-            return "Executive";
-        else
-            return "Standard";
     }
 }
