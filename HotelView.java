@@ -340,7 +340,12 @@ public class HotelView {
                     checkOutDate = getValidDate("Enter check-out date (1-31):");
                 }
                 Reservation r = controller.getReservationDetails(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
-                displayReservationDetails(r, hotel, room, checkInDate, checkOutDate);
+                if (r == null) {
+                    displayEnterAnother("reservation. The specified dates do not match any reservation.");
+                }
+                else {
+                    displayReservationDetails(r, hotel, room, checkInDate, checkOutDate);
+                }
             }
         }
     }
@@ -580,9 +585,9 @@ public class HotelView {
             if (room != null) {
                 int checkInDate = getValidDate("Enter check-in date (1-31):");
                 int checkOutDate = getValidDate("Enter check-out date (1-31):");
-                while (checkOutDate < checkInDate) {
+                if (checkOutDate < checkInDate) {
                     JOptionPane.showMessageDialog(mainFrame, "Check-out date must be after check-in date.");
-                    checkOutDate = getValidDate("Enter check-out date (1-31):");
+                    return;
                 }
                 controller.cancelReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
             }
