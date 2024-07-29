@@ -13,6 +13,7 @@ public class HotelView {
     private HotelController controller;
     private JTable hotelsTable;
     private JLabel roomNumberLabel;
+    private JLabel roomTypeLabel;
     private JLabel priceLabel;
     private JLabel statusLabel;
     private JTable bookedRoomsTable;
@@ -41,9 +42,11 @@ public class HotelView {
         // Panel for labels
         JPanel labelPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         roomNumberLabel = new JLabel("Room Number: ");
+        roomTypeLabel = new JLabel("Room Type: ");
         priceLabel = new JLabel("Price: ");
         statusLabel = new JLabel("Status: ");
         labelPanel.add(roomNumberLabel);
+        labelPanel.add(roomTypeLabel);
         labelPanel.add(priceLabel);
         labelPanel.add(statusLabel);
 
@@ -360,6 +363,16 @@ public class HotelView {
             return;
         }
 
+        String roomType = JOptionPane.showInputDialog(mainFrame, "Enter room type:");
+        if (roomType == null || roomType.trim().isEmpty()) {
+            displayError("Room type cannot be empty.");
+            return;
+        }
+        else if (!(roomType.equals("Standard")) && !(roomType.equals("Deluxe")) && !(roomType.equals("Executive"))) {
+            displayError("Enter a valid room type.");
+            return;
+        }
+
         int roomNumber;
         try {
             roomNumber = Integer.parseInt(roomNumberStr);
@@ -384,7 +397,7 @@ public class HotelView {
 
         int confirmation = JOptionPane.showConfirmDialog(mainFrame, "Are you sure you want to add " + count + " room(s) to hotel " + hotelName + "?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirmation == JOptionPane.YES_OPTION) {
-            controller.addRoomToHotel(hotelName, roomNumber, count);
+            controller.addRoomToHotel(hotelName, roomNumber, roomType, count);
         }
     }
 
@@ -704,6 +717,7 @@ public class HotelView {
     public void displayReservationDetails(Reservation reservation, HotelModel hotel, Room room, int checkInDate, int checkOutDate) {
         JOptionPane.showMessageDialog(mainFrame,
                 "Reservation details for room number: " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() + "\n" +
+                        "Room type: " + room.getRoomType() + "\n" +
                         "Check-in date: " + checkInDate + ", Check-out date: " + checkOutDate + "\n" +
                         "Total price: $" + reservation.getTotalPrice(),
                 "Reservation Details",
@@ -749,6 +763,7 @@ public class HotelView {
 
     public void displayRoomDetails(Room room) {
         roomNumberLabel.setText("Room Number: " + room.getRoomNumber());
+        roomTypeLabel.setText("Room type: " + room.getRoomType());
         priceLabel.setText("Price: $" + room.getPrice());
         statusLabel.setText("Status: " + (room.isBooked() ? "Booked" : "Available"));
     }
