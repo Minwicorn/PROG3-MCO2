@@ -24,52 +24,49 @@ public class HotelView {
     public HotelView() {
         
         mainFrame = new JFrame("Hotel Reservation System");
-        mainFrame.setSize(400, 400);
-        mainFrame.setLayout(new GridLayout(4, 1));
+        mainFrame.setSize(600, 600);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLayout(new BorderLayout(10, 10));
+
+        // Panel for tables
+        JPanel tablePanel = new JPanel(new GridLayout(1, 2, 10, 10));
 
         // Initialize the hotels table
-        hotelsTable = new JTable(new DefaultTableModel(new Object[]{"Hotel Name", "Location", "Rating"}, 0));
+        hotelsTable = new JTable(new DefaultTableModel(new Object[]{"Hotel Name", "Room Number", "Type", "Price", "Status"}, 0));
         JScrollPane scrollPane = new JScrollPane(hotelsTable);
-        mainFrame.add(scrollPane);
+        tablePanel.add(scrollPane);
 
-         // Initialize the booked rooms table
-         bookedRoomsTable = new JTable(new DefaultTableModel(new Object[]{"Room Number", "Type", "Price", "Status"}, 0));
-         JScrollPane bookedRoomsScrollPane = new JScrollPane(bookedRoomsTable);
-         mainFrame.add(bookedRoomsScrollPane, BorderLayout.EAST);
+        mainFrame.add(tablePanel, BorderLayout.CENTER);
 
-         // Initialize the labels
-         roomNumberLabel = new JLabel("Room Number: ");
-         priceLabel = new JLabel("Price: ");
-         statusLabel = new JLabel("Status: ");
- 
-         // Adding labels to the main frame or a panel
-         JPanel labelPanel = new JPanel();
-         labelPanel.add(roomNumberLabel);
-         labelPanel.add(priceLabel);
-         labelPanel.add(statusLabel);
- 
-         mainFrame.add(labelPanel, BorderLayout.SOUTH);
+        // Panel for labels
+        JPanel labelPanel = new JPanel(new GridLayout(1, 3, 10, 10));
+        roomNumberLabel = new JLabel("Room Number: ");
+        priceLabel = new JLabel("Price: ");
+        statusLabel = new JLabel("Status: ");
+        labelPanel.add(roomNumberLabel);
+        labelPanel.add(priceLabel);
+        labelPanel.add(statusLabel);
 
+        mainFrame.add(labelPanel, BorderLayout.SOUTH);
+
+        // Panel for buttons
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         createHotelBtn = new JButton("Create Hotel");
         listHotelBtn = new JButton("List Hotels");
         manageHotelBtn = new JButton("Manage Hotel");
         simulateBookingBtn = new JButton("Simulate Booking");
-
-        createHotelBtn.setPreferredSize(new Dimension(300, 30));
-        listHotelBtn.setPreferredSize(new Dimension(300, 30));
-        manageHotelBtn.setPreferredSize(new Dimension(300, 30));
-        simulateBookingBtn.setPreferredSize(new Dimension(300, 30));
 
         createHotelBtn.setFocusable(false);
         listHotelBtn.setFocusable(false);
         manageHotelBtn.setFocusable(false);
         simulateBookingBtn.setFocusable(false);
 
-        mainFrame.add(createHotelBtn);
-        mainFrame.add(listHotelBtn);
-        mainFrame.add(manageHotelBtn);
-        mainFrame.add(simulateBookingBtn);
+        buttonPanel.add(createHotelBtn);
+        buttonPanel.add(listHotelBtn);
+        buttonPanel.add(manageHotelBtn);
+        buttonPanel.add(simulateBookingBtn);
+
+        mainFrame.add(buttonPanel, BorderLayout.NORTH);
 
         mainFrame.setVisible(true);
 
