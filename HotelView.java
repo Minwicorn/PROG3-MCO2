@@ -50,7 +50,6 @@ public class HotelView {
         labelPanel.add(priceLabel);
         labelPanel.add(statusLabel);
 
-        mainFrame.add(labelPanel, BorderLayout.SOUTH);
 
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 10, 10));
@@ -814,8 +813,7 @@ public class HotelView {
             for (HotelModel hotel : hotels) {
                 model.addRow(new Object[]{
                     hotel.getHotelName(),
-                    hotel.getRooms().size(),
-                    hotel.getReservations().size()
+                   
                 });
             }
         }
