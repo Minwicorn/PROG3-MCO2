@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 public class HotelView {
 
     private JFrame mainFrame;
-    private JButton createHotelBtn, listHotelBtn, manageHotelBtn, simulateBookingBtn;
+    private JButton createHotelBtn, viewHotelBtn, manageHotelBtn, simulateBookingBtn;
     private HotelController controller;
     private JTable hotelsTable;
     private JLabel roomNumberLabel;
@@ -55,17 +55,17 @@ public class HotelView {
         // Panel for buttons
         JPanel buttonPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         createHotelBtn = new JButton("Create Hotel");
-        listHotelBtn = new JButton("List Hotels");
+        viewHotelBtn = new JButton("View Hotels");
         manageHotelBtn = new JButton("Manage Hotel");
         simulateBookingBtn = new JButton("Simulate Booking");
 
         createHotelBtn.setFocusable(false);
-        listHotelBtn.setFocusable(false);
+        viewHotelBtn.setFocusable(false);
         manageHotelBtn.setFocusable(false);
         simulateBookingBtn.setFocusable(false);
 
         buttonPanel.add(createHotelBtn);
-        buttonPanel.add(listHotelBtn);
+        buttonPanel.add(viewHotelBtn);
         buttonPanel.add(manageHotelBtn);
         buttonPanel.add(simulateBookingBtn);
 
@@ -81,10 +81,10 @@ public class HotelView {
             }
         });
 
-        listHotelBtn.addActionListener(new ActionListener() {
+        viewHotelBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showListsHotelMenu();
+                showViewHotelsMenu();
             }
         });
 
@@ -103,19 +103,21 @@ public class HotelView {
         });
     }
 
-    private void showListsHotelMenu(){
+    private void showViewHotelsMenu(){
          // Create a new JFrame for Show Lists Hotel menu
-         JFrame manageFrame = new JFrame("Lists Hotel");
+         JFrame manageFrame = new JFrame("View Hotel");
          manageFrame.setSize(400, 400);
-         manageFrame.setLayout(new GridLayout(3, 1));
+         manageFrame.setLayout(new GridLayout(4, 1));
  
          JButton showHotelDetailsBtn = new JButton("Show Hotel Details");
          JButton estimateEarningBtn = new JButton("Estimate Earnings");
          JButton showReservationDetailsBtn = new JButton("Show Reservation Details");
+         JButton listHotelsBtn = new JButton("List Hotels");
     
          manageFrame.add(showHotelDetailsBtn);
          manageFrame.add(estimateEarningBtn);
          manageFrame.add(showReservationDetailsBtn);
+         manageFrame.add(listHotelsBtn);
 
          manageFrame.setVisible(true);
 
@@ -140,6 +142,13 @@ public class HotelView {
                 showReservationDetails();
             }
         });
+
+        listHotelsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listHotels();
+            }
+        });
     }
 
     private void showManageHotelMenu() {
@@ -151,10 +160,11 @@ public class HotelView {
         JButton changeNameBtn = new JButton("Change Hotel Name");
         JButton addRoomBtn = new JButton("Add a Room");
         JButton removeRoomBtn = new JButton("Remove a Room");
-        JButton updateRoomPriceBtn = new JButton("Update Room Price");
+        JButton updateRoomPriceBtn = new JButton("Update Base Room Price");
         JButton modifyPriceDayBtn = new JButton("Modify Price for a Day");
         JButton modifyPriceRangeBtn = new JButton("Modify Price for a Range of Days");
         JButton removeHotelBtn = new JButton("Remove a Hotel");
+        
 
         manageFrame.add(changeNameBtn);
         manageFrame.add(addRoomBtn);
@@ -329,7 +339,8 @@ public class HotelView {
                     JOptionPane.showMessageDialog(mainFrame, "Check-out date must be after check-in date.");
                     checkOutDate = getValidDate("Enter check-out date (1-31):");
                 }
-                controller.getReservationDetails(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
+                Reservation r = controller.getReservationDetails(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
+                displayReservationDetails(r, hotel, room, checkInDate, checkOutDate);
             }
         }
     }
@@ -356,10 +367,22 @@ public class HotelView {
             displayError("Hotel name cannot be empty.");
             return;
         }
-
+        HotelModel hotel = controller.findHotelByName(hotelName.trim());
+        if (hotel == null) {
+            JOptionPane.showMessageDialog(mainFrame, "Hotel not found.");
+            return;
+        }
+        
         String roomNumberStr = JOptionPane.showInputDialog(mainFrame, "Enter room number:");
         if (roomNumberStr == null || roomNumberStr.trim().isEmpty()) {
             displayError("Room number cannot be empty.");
+            return;
+        }
+        int roomNumber;
+        try {
+            roomNumber = Integer.parseInt(roomNumberStr);
+        } catch (NumberFormatException e) {
+            displayError("Invalid room number.");
             return;
         }
 
@@ -368,16 +391,8 @@ public class HotelView {
             displayError("Room type cannot be empty.");
             return;
         }
-        else if (!(roomType.equals("Standard")) && !(roomType.equals("Deluxe")) && !(roomType.equals("Executive"))) {
+        else if (!(roomType.equalsIgnoreCase("Standard")) && !(roomType.equalsIgnoreCase("Deluxe")) && !(roomType.equalsIgnoreCase("Executive"))) {
             displayError("Enter a valid room type.");
-            return;
-        }
-
-        int roomNumber;
-        try {
-            roomNumber = Integer.parseInt(roomNumberStr);
-        } catch (NumberFormatException e) {
-            displayError("Invalid room number.");
             return;
         }
 
@@ -447,43 +462,75 @@ public class HotelView {
     private void updateRoomPrice() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
-            Room room = validateRoomNumber(hotel, "Enter room number:");
-            if (room != null) {
+            //Room room = validateRoomNumber(hotel, "Enter room number:");
+            //if (room != null) {
                 double newPrice = getValidDouble("Enter new room price:");
-                controller.updateRoomPrice(hotel.getHotelName(), room.getRoomNumber(), newPrice);
-                JOptionPane.showMessageDialog(mainFrame, "Room price updated: " + room.getRoomNumber() + " - $" + newPrice);
-            }
+                controller.updateRoomPrice(hotel.getHotelName(), newPrice);
+                //JOptionPane.showMessageDialog(mainFrame, "Room price updated: " + "$" + newPrice);
+            //}
         }
     }
 
     private void modifyDatePrice() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
-            Room room = validateRoomNumber(hotel, "Enter room number:");
-            if (room != null) {
                 int date = getValidDate("Enter date (1-31):");
-                double newPrice = getValidDouble("Enter new price for date " + date + ":");
-                controller.modifyPriceForADay(hotel.getHotelName(), room.getRoomNumber(), date, newPrice);
-                JOptionPane.showMessageDialog(mainFrame, "Price updated for date " + date + ": $" + newPrice);
-            }
+                String priceRateStr = JOptionPane.showInputDialog(mainFrame, "Enter price rate (50-150):");
+                if (priceRateStr == null || priceRateStr.trim().isEmpty()) {
+                    displayError("Price rate cannot be empty.");
+                    return;
+                }
+                int priceRate;
+                try {
+                    priceRate = Integer.parseInt(priceRateStr);
+                } catch (NumberFormatException e) {
+                    displayError("Invalid price rate.");
+                    return;
+                }
+                if (priceRate > 150 || priceRate < 50) {
+                    displayError("Enter a price rate within the range.");
+                    return;
+                }
+
+                //controller.modifyPriceForADay(hotel.getHotelName(), room.getRoomNumber(), date, newPrice);
+                controller.datePriceModifier(hotel, date, priceRate);
+                JOptionPane.showMessageDialog(mainFrame, "Price updated for day " + date + ": " + priceRate + "%");
+            //}
         }
     }
 
     private void modifyDatePriceRange() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
-            Room room = validateRoomNumber(hotel, "Enter room number:");
-            if (room != null) {
+            //Room room = validateRoomNumber(hotel, "Enter room number:");
+            //if (room != null) {
                 int startDate = getValidDate("Enter start date (1-31):");
                 int endDate = getValidDate("Enter end date (1-31):");
-                while (endDate < startDate) {
+                if (endDate < startDate) {
                     JOptionPane.showMessageDialog(mainFrame, "End date must be after start date.");
-                    endDate = getValidDate("Enter end date (1-31):");
+                    return;
                 }
-                double newPrice = getValidDouble("Enter new price for range " + startDate + " to " + endDate + ":");
-                controller.modifyPriceForRange(hotel.getHotelName(), room.getRoomNumber(), startDate, endDate, newPrice);
-                JOptionPane.showMessageDialog(mainFrame, "Price updated for dates " + startDate + " to " + endDate + ": $" + newPrice);
-            }
+                String priceRateStr = JOptionPane.showInputDialog(mainFrame, "Enter price rate (50-150):");
+                if (priceRateStr == null || priceRateStr.trim().isEmpty()) {
+                    displayError("Price rate cannot be empty.");
+                    return;
+                }
+                int priceRate;
+                try {
+                    priceRate = Integer.parseInt(priceRateStr);
+                } catch (NumberFormatException e) {
+                    displayError("Invalid price rate.");
+                    return;
+                }
+                if (priceRate > 150 || priceRate < 50) {
+                    displayError("Enter a price rate within the range.");
+                    return;
+                }
+                //double newPrice = getValidDouble("Enter new price for range " + startDate + " to " + endDate + ":");
+                //controller.modifyPriceForRange(hotel.getHotelName(), room.getRoomNumber(), startDate, endDate, newPrice);
+                controller.datePriceModifier(hotel, startDate, endDate, priceRate);
+                JOptionPane.showMessageDialog(mainFrame, "Price updated for dates " + startDate + " to " + endDate + ": " + priceRate + "%");
+            //}
         }
     }
 
@@ -516,7 +563,6 @@ public class HotelView {
                 String discountCode = JOptionPane.showInputDialog(null, "Enter discount code (if any):");
                 if (customerName != null && !customerName.trim().isEmpty()) {
                     controller.makeReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate, customerName.trim(), discountCode);
-                    JOptionPane.showMessageDialog(mainFrame, "Reservation made for " + customerName);
                 } else {
                     JOptionPane.showMessageDialog(mainFrame, "Customer name cannot be empty.");
                 }
@@ -539,7 +585,6 @@ public class HotelView {
                     checkOutDate = getValidDate("Enter check-out date (1-31):");
                 }
                 controller.cancelReservation(hotel.getHotelName(), room.getRoomNumber(), checkInDate, checkOutDate);
-                JOptionPane.showMessageDialog(mainFrame, "Reservation cancelled.");
             }
         }
     }
@@ -552,9 +597,9 @@ public class HotelView {
         if (hotel != null) {
             int date = getValidDate("Enter date (1-31):");
             List<Room> bookedRooms = controller.getBookedRooms(hotel.getHotelName(), date);
-            StringBuilder sb = new StringBuilder("Booked rooms on date " + date + ":\n");
+            StringBuilder sb = new StringBuilder("Booked rooms on date " + date + "\n");
             for (Room room : bookedRooms) {
-                sb.append("Room ").append(room.getRoomNumber()).append(": ").append("\n");
+                sb.append("Room ").append(room.getRoomNumber()).append("\n");
             }
             JOptionPane.showMessageDialog(mainFrame, sb.toString());
         }
@@ -595,10 +640,18 @@ public class HotelView {
      */
     private void showRoomInfoAcrossMonth() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
+        if(hotel == null)
+            return;
+        Room room = validateRoomNumber(hotel, "Enter room number:");
+        if(room == null)
+            return;
         if (hotel != null) {
-            int month = getValidMonth("Enter month (1-12):");
-            controller.showRoomInfoAcrossMonth(hotel.getHotelName(), month);
+            controller.showRoomInfoAcrossMonth(hotel, room);
         }
+    }
+
+    public void displayRoomInfoAcrossMonth(String info) {
+        JOptionPane.showMessageDialog(mainFrame, info);
     }
 
     /**
@@ -715,11 +768,13 @@ public class HotelView {
     }
 
     public void displayReservationDetails(Reservation reservation, HotelModel hotel, Room room, int checkInDate, int checkOutDate) {
+        reservation.calculateTotalPrice(hotel);
         JOptionPane.showMessageDialog(mainFrame,
-                "Reservation details for room number: " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() + "\n" +
+                "Reservation details for room number " + room.getRoomNumber() + " in hotel: " + hotel.getHotelName() + "\n" +
                         "Room type: " + room.getRoomType() + "\n" +
                         "Check-in date: " + checkInDate + ", Check-out date: " + checkOutDate + "\n" +
-                        "Total price: $" + reservation.getTotalPrice(),
+                        "Total price: $" + reservation.getTotalPrice() + "\n" +
+                        "Guest name: " + reservation.getGuestName(),
                 "Reservation Details",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -768,6 +823,12 @@ public class HotelView {
         statusLabel.setText("Status: " + (room.isBooked() ? "Booked" : "Available"));
     }
 
+    public void displayRoomCountsForDate(int available, int booked) {
+        String message = "Available rooms: " + available + "\n" 
+                        +"Booked rooms: " + booked;
+        JOptionPane.showMessageDialog(mainFrame, message);
+    }
+
     public void displayBookedRooms(List<Room> bookedRooms) {
         DefaultTableModel model = (DefaultTableModel) bookedRoomsTable.getModel();
         model.setRowCount(0); // Clear existing rows
@@ -792,6 +853,12 @@ public class HotelView {
         }
         return false;
     }
+
+    private void listHotels() {
+        List<HotelModel> hotels = controller.getHotels();
+        displayHotels(hotels);
+    }
+
 
     /*
      * DISPLAY MESSAGES:
@@ -828,7 +895,7 @@ public class HotelView {
     }
 
     // Method to display error messages
-    private void displayError(String message) {
+    public void displayError(String message) {
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 

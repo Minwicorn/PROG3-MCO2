@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 
 /**
  * The HotelController class manages operations related to hotels and rooms,
@@ -103,10 +105,14 @@ public class HotelController {
             {
                 view.displayMaxRooms();
                 return;
-            } else if(room == null && (roomType.equals("Standard") || roomType.equals("Deluxe") || roomType.equals("Executive"))) 
+            } else if(room == null && (roomType.equalsIgnoreCase("Standard") || roomType.equalsIgnoreCase("Deluxe") || roomType.equalsIgnoreCase("Executive"))) 
             {
+                double price = DEFAULT_ROOM_PRICE;
+                if(hotel.getRooms().size()>0) {
+                    price = hotel.getRooms().get(0).getPrice(); // If there exists a room already, automatically set it to have the same base price
+                }
                 for(int i=0;i<count;i++){
-                    successes += addRoomToHotel(hotelName, roomNumber+i, roomType, DEFAULT_ROOM_PRICE);
+                    successes += addRoomToHotel(hotelName, roomNumber+i, roomType, price);
                 }
                 view.displaySuccess("Added " + successes + " room(s)");
                 return;
@@ -132,11 +138,11 @@ public class HotelController {
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
             if (room == null) {
-                if(roomType.equals("Deluxe"))
+                if(roomType.equalsIgnoreCase("Deluxe"))
                     hotel.addRoom((Room)new Deluxe(roomNumber, price));
-                else if(roomType.equals("Executive"))
+                else if(roomType.equalsIgnoreCase("Executive"))
                     hotel.addRoom((Room)new Executive(roomNumber, price));
-                else if(roomType.equals("Standard"))
+                else if(roomType.equalsIgnoreCase("Standard"))
                     hotel.addRoom(new Room(roomNumber, price));
                 view.displaySuccess("Room "+ roomNumber + " added");
                 return 1;
@@ -162,14 +168,17 @@ public class HotelController {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
             Room room = hotel.getRoom(roomNumber);
-            if (room != null && hotel.getRooms().size()>1) {
+            if (room != null && hotel.getRooms().size()>1 && !room.isBooked()) {
                 hotel.getRooms().remove(room);
                 view.displaySuccess("Room removed");
                 return true;
             } else if(hotel.getRooms().size() == 1) {
                 view.displayMinRooms();
                 return false;
-            } 
+            } else if(room.isBooked()) {
+                view.displayError("Unable to remove a room that is reserved.");
+                return false;
+            }
             else {
                 view.displayRoomNotFound(roomNumber);
                 return false;
@@ -188,7 +197,7 @@ public class HotelController {
      * @param hotelName Name of the hotel whose room prices are to be updated
      * @param newPrice  New price for the rooms in the hotel
      */
-    public void updateRoomPrice(String hotelName, int roomNumber, double newPrice) {
+    public void updateRoomPrice(String hotelName, double newPrice) {
         if (newPrice < 100) {
             view.displayEnterAnother("price. Must be greater than 100.0.");
             return;
@@ -363,6 +372,7 @@ public class HotelController {
                     room.addReservation(reservation);
                     hotel.addReservation(reservation);
                     view.displaySuccess("Reservation made with total price: " + reservation.getTotalPrice());
+                    view.displaySuccess("Reservation made for " + guestName);
                 }
             } else {
                 view.displayRoomNotFound(roomNumber);
@@ -523,28 +533,6 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
         }
     }
 
-    public boolean modifyPriceForADay(String hotelName, int roomNumber, int date, double newPrice) {
-        HotelModel hotel = findHotelByName(hotelName);
-        if (hotel != null) {
-            Room room = hotel.getRoomByNumber(roomNumber);
-            if (room != null) {
-                return room.modifyPriceForADay(date, newPrice);
-            }
-        }
-        return false;
-    }
-
-    public boolean modifyPriceForRange(String hotelName, int roomNumber, int startDate, int endDate, double newPrice) {
-        HotelModel hotel = findHotelByName(hotelName);
-        if (hotel != null) {
-            Room room = hotel.getRoomByNumber(roomNumber);
-            if (room != null) {
-                return room.modifyPriceForRange(startDate, endDate, newPrice);
-            }
-        }
-        return false;
-    }
-
     public void showRoomCountsForDate(String hotelName, int date) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
@@ -557,19 +545,16 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
                     availableRooms++;
                 }
             }
-            // Show counts in any desired way, e.g., logging, returning values, or updating GUI
-            System.out.println("Available rooms: " + availableRooms);
-            System.out.println("Booked rooms: " + bookedRooms);
+            view.displayRoomCountsForDate(availableRooms, bookedRooms);
         } else {
-            System.out.println("Hotel not found.");
+            view.displayHotelNotFound(hotelName);
         }
     }
 
-    public void showRoomInfoAcrossMonth(String hotelName, int month) {
-        HotelModel hotel = findHotelByName(hotelName);
-        if (hotel != null) {
+    public void showRoomInfoAcrossMonth(HotelModel hotel, Room room) {
+        //if (hotel != null) {
             StringBuilder sb = new StringBuilder("Room information for the month:\n");
-            for (Room room : hotel.getRooms()) {
+            //for (Room room : hotel.getRooms()) {
                 sb.append("Room ").append(room.getRoomNumber()).append(":\n");
                 for (int day = 1; day <= 31; day++) { // Assuming a maximum of 31 days in a month
                     sb.append("  Day ").append(day).append(": ");
@@ -579,11 +564,10 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
                         sb.append("Available\n");
                     }
                 }
-            }
-            // Show the information using the desired method, e.g., logging, returning values, or updating GUI
-            System.out.println(sb.toString());
-        } else {
-            System.out.println("Hotel not found.");
-        }
+            //}
+            view.displayRoomInfoAcrossMonth(sb.toString());
+        //} else {
+        //    view.displayHotelNotFound(hotelName);
+        //}
     }
 }

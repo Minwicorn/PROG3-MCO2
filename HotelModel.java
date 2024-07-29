@@ -127,6 +127,7 @@ public class HotelModel {
     public double calculateEarnings() {
         double earnings = 0;
         for (Reservation reservation : reservations) {
+            reservation.calculateTotalPrice(this);
             earnings += reservation.getTotalPrice();
         }
         return earnings;

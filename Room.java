@@ -179,6 +179,7 @@ public class Room {
         return availableRooms;
     }
 
+    /* 
     public boolean modifyPriceForADay(int date, double newPrice) {
         dailyPrices.put(date, newPrice);
         return true;
@@ -189,7 +190,7 @@ public class Room {
             dailyPrices.put(date, newPrice);
         }
         return true;
-    }
+    }*/
     
     // Optionally, you can add a method to get room name if applicable.
     public String getRoomName() {
