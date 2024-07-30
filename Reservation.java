@@ -141,9 +141,9 @@ public class Reservation {
      * @param discountCode the discount code to apply
      */
     public void applyDiscount(String discountCode) {
-        this.discountCode = discountCode; // Store the discount code
-
-        switch (discountCode) {
+        this.discountCode = discountCode; // Convert to uppercase for case-sensitive matching
+    
+        switch (this.discountCode) {
             case "I_WORK_HERE":
                 totalPrice *= 0.90; // Apply a 10% discount
                 break;
@@ -151,17 +151,33 @@ public class Reservation {
                 if (calculateNumberOfNights() >= 5) {
                     double pricePerNight = room.getPrice(); // Assuming the price per night is fixed
                     totalPrice -= pricePerNight; // Subtract the price of the first night
+                } else {
+                    // Display a message dialog indicating the discount is not applicable
+                    javax.swing.JOptionPane.showMessageDialog(null, 
+                        "The STAY4_GET1 discount is not applicable for stays less than 5 nights.", 
+                        "Discount Not Applicable", 
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 }
                 break;
             case "PAYDAY":
                 if ((checkInDate <= 15 && checkOutDate > 15) || (checkInDate <= 30 && checkOutDate > 30)) {
                     totalPrice *= 0.93; // Apply a 7% discount
+                } else {
+                    // Display a message dialog indicating the discount is not applicable
+                    javax.swing.JOptionPane.showMessageDialog(null, 
+                        "The PAYDAY discount is only applicable for stays that include the 15th or the end of the month.", 
+                        "Discount Not Applicable", 
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
                 }
                 break;
             default:
                 // Invalid or unsupported discount code
+                javax.swing.JOptionPane.showMessageDialog(null, 
+                    "Invalid or unsupported discount code.", 
+                    "Error", 
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
                 break;
         }
     }
-
+    
 }
