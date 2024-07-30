@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ *  The HotelView class manages all the GUI operations, like panels, 
+ *  buttons, etc. It lets the user interact with the GUI, and connects
+ *  these interactions to HotelController.
+ */
 public class HotelView {
 
     private JFrame mainFrame;
@@ -102,23 +107,24 @@ public class HotelView {
         });
     }
 
+    /**
+     *  Method that shows the menu for "View Hotels"
+     */
     private void showViewHotelsMenu(){
          // Create a new JFrame for Show Lists Hotel menu
          JFrame manageFrame = new JFrame("View Hotel");
          manageFrame.setSize(400, 400);
-         manageFrame.setLayout(new GridLayout(5, 1));
+         manageFrame.setLayout(new GridLayout(4, 1));
  
          JButton showHotelDetailsBtn = new JButton("Show Hotel Details");
          JButton estimateEarningBtn = new JButton("Estimate Earnings");
          JButton showReservationDetailsBtn = new JButton("Show Reservation Details");
          JButton listHotelsBtn = new JButton("List Hotels");
-         JButton listRoomsBtn = new JButton("List Rooms");
     
          manageFrame.add(showHotelDetailsBtn);
          manageFrame.add(estimateEarningBtn);
          manageFrame.add(showReservationDetailsBtn);
          manageFrame.add(listHotelsBtn);
-         manageFrame.add(listRoomsBtn);
 
          manageFrame.setVisible(true);
 
@@ -150,15 +156,11 @@ public class HotelView {
                 listHotels();
             }
         });
-
-        listRoomsBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listRooms();
-            }
-        });
     }
 
+    /**
+     *  Method that shows the menu for "Manage Hotel"
+     */
     private void showManageHotelMenu() {
         // Create a new JFrame for Manage Hotel menu
         JFrame manageFrame = new JFrame("Manage Hotel");
@@ -234,6 +236,9 @@ public class HotelView {
         });
     }
 
+    /**
+     *  Method that shows the menu for "Simulate Booking"
+     */
     private void showSimulateBookingMenu() {
         // Create a new JFrame for Simulate Booking menu
         JFrame bookingFrame = new JFrame("Simulate Booking");
@@ -317,6 +322,9 @@ public class HotelView {
     }
 
 
+    /**
+     *  Gets input for hotel name, then calls to display hotel details
+     */
     private void getHotelDetails() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
@@ -324,6 +332,9 @@ public class HotelView {
         }
     }
 
+    /**
+     *  Estimates earning for a hotel, when given the hotel name
+     */
     private void estimateEarnings() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
@@ -357,6 +368,7 @@ public class HotelView {
             }
         }
     }
+
     /**
      * Changes the name of a specified hotel based on user input.
      */
@@ -373,7 +385,9 @@ public class HotelView {
         }
     }
 
-    // Method to add rooms to a hotel
+    /**
+     * Method to add rooms to a hotel
+     */
     private void addRoomToHotel() {
         String hotelName = JOptionPane.showInputDialog(mainFrame, "Enter hotel name:");
         if (hotelName == null || hotelName.trim().isEmpty()) {
@@ -399,7 +413,7 @@ public class HotelView {
             return;
         }
 
-        String roomType = JOptionPane.showInputDialog(mainFrame, "Enter room type:");
+        String roomType = JOptionPane.showInputDialog(mainFrame, "Enter room type (Standard/Deluxe/Executive):");
         if (roomType == null || roomType.trim().isEmpty()) {
             displayError("Room type cannot be empty.");
             return;
@@ -429,6 +443,9 @@ public class HotelView {
         }
     }
 
+    /**
+     * Method to remove room from a hotel
+     */
     private void removeRoomFromHotel() {
         String hotelName = JOptionPane.showInputDialog(mainFrame, "Enter hotel name:");
         if (hotelName == null) return; // User cancelled
@@ -484,6 +501,9 @@ public class HotelView {
         }
     }
 
+    /**
+     * Method to modify the price of reservations for a single day
+     */
     private void modifyDatePrice() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
@@ -512,6 +532,9 @@ public class HotelView {
         }
     }
 
+    /**
+     * Method to modify the price of reservations for a range of days
+     */
     private void modifyDatePriceRange() {
         HotelModel hotel = validateHotelName("Enter hotel name:");
         if (hotel != null) {
@@ -712,6 +735,11 @@ public class HotelView {
         return room;
     }
     
+    /**
+     * Method that validates whether or not the user input is a valid date within 1-31
+     * @param message Message that is shown to the user
+     * @return
+     */
     private int getValidDate(String message) {
         while (true) {
             String dateStr = JOptionPane.showInputDialog(mainFrame, message);
@@ -730,25 +758,11 @@ public class HotelView {
         }
     }
     
-
-    private int getValidMonth(String message) {
-        String monthStr;
-        int month;
-        while (true) {
-            monthStr = JOptionPane.showInputDialog(mainFrame, message);
-            try {
-                month = Integer.parseInt(monthStr);
-                if (month >= 1 && month <= 12) {
-                    return month;
-                } else {
-                    JOptionPane.showMessageDialog(mainFrame, "Month must be between 1 and 12.");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(mainFrame, "Invalid month.");
-            }
-        }
-    }
-
+    /**
+     * Method that validates whether or not the user input is a valid double
+     * @param message Message that is shown to the user
+     * @return
+     */
     private double getValidDouble(String message) {
         String doubleStr;
         double value;
@@ -780,6 +794,18 @@ public class HotelView {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Displays detailed information about a specific reservation, including
+     * room number, hotel name, room type, check in date, check out date, 
+     * total price, and the guest's name. 
+     * 
+     * @param reservation   The 'reservation' that is being checked for details
+     * @param hotel         The `HotelModel` object representing the hotel to be
+     *                      displayed.
+     * @param room          The 'room' object that is reserved
+     * @param checkInDate   The check in date for the reservation
+     * @param checkOutDate  The check out date for the reservation
+     */
     public void displayReservationDetails(Reservation reservation, HotelModel hotel, Room room, int checkInDate, int checkOutDate) {
         reservation.calculateTotalPrice(hotel);
         JOptionPane.showMessageDialog(mainFrame,
@@ -805,6 +831,10 @@ public class HotelView {
         return response == JOptionPane.YES_OPTION;
     }
 
+    /**
+     * 
+     * @return the discount code typed by the user
+     */
     private String getDiscountCode() {
         return JOptionPane.showInputDialog(mainFrame,
                 "Enter discount code (or press Enter to skip):",
@@ -812,6 +842,10 @@ public class HotelView {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
+    /**
+     * Displays all hotels created
+     * @param hotels List of all hotels
+     */
    public void displayHotels(List<HotelModel> hotels) {
         DefaultTableModel model = (DefaultTableModel) hotelsTable.getModel();
         model.setRowCount(0); // Clear existing rows
@@ -831,14 +865,20 @@ public class HotelView {
                         int roomNumber = room.getRoomNumber();
                         String roomType = room.getRoomType();
                         double price = room.getPrice();
-                        boolean status = room.isBooked();
+                        String book;
+                        if(room.isBooked()) {
+                            book = "Booked";
+                        }
+                        else {
+                            book = "Available";
+                        }
     
                         model.addRow(new Object[]{
                             hotelName,
                             roomNumber,
                             roomType,
                             price,
-                            status
+                            book,
                         });
                     }
                 }
@@ -846,32 +886,10 @@ public class HotelView {
         }
     }
 
-    public void displayRooms(List<Room> rooms) {
-        DefaultTableModel model = (DefaultTableModel) hotelsTable.getModel();
-        model.setRowCount(0); // Clear existing rows
-
-        if (rooms.isEmpty()) {
-            JOptionPane.showMessageDialog(mainFrame, "No rooms available.");
-        } else {
-            String book;
-            for (Room room : rooms) {
-                if(room.isBooked()) {
-                    book = "Booked";
-                }
-                else {
-                    book = "Available";
-                }
-                model.addRow(new Object[]{
-                    "",
-                    room.getRoomNumber(),
-                    room.getRoomType(),
-                    room.getPrice(),
-                    book,
-                });
-            }
-        }
-    }
-
+    /**
+     * 
+     * @param room Room that will have details displayed
+     */
     public void displayRoomDetails(Room room) {
         roomNumberLabel.setText("Room Number: " + room.getRoomNumber());
         roomTypeLabel.setText("Room type: " + room.getRoomType());
@@ -879,12 +897,21 @@ public class HotelView {
         statusLabel.setText("Status: " + (room.isBooked() ? "Booked" : "Available"));
     }
 
+    /**
+     * Displays how many rooms are available and booked
+     * @param available Number of available rooms
+     * @param booked    Number of booked rooms
+     */
     public void displayRoomCountsForDate(int available, int booked) {
         String message = "Available rooms: " + available + "\n" 
                         +"Booked rooms: " + booked;
         JOptionPane.showMessageDialog(mainFrame, message);
     }
 
+    /**
+     * Displays all rooms that are booked
+     * @param bookedRooms List of 'room' objects that are booked
+     */
     public void displayBookedRooms(List<Room> bookedRooms) {
         DefaultTableModel model = (DefaultTableModel) bookedRoomsTable.getModel();
         model.setRowCount(0); // Clear existing rows
@@ -901,6 +928,10 @@ public class HotelView {
         }
     }
     
+    /**
+     * 
+     * @return true if the hotel has at least one room, false if not
+     */
     public boolean areAnyRoomsAvailable() {
         for (HotelModel hotel : controller.getHotels()) {
             if (!hotel.getRooms().isEmpty()) {
@@ -910,53 +941,68 @@ public class HotelView {
         return false;
     }
 
+    /**
+     * Lists all hotels created
+     */
     private void listHotels() {
         List<HotelModel> hotels = controller.getHotels();
         displayHotels(hotels);
     }
 
-    private void listRooms() {
-        HotelModel hotel = validateHotelName("Enter hotel name:");
-        List<Room> rooms = hotel.getRooms();
-        displayRooms(rooms);
-    }
-
-
     /*
      * DISPLAY MESSAGES:
      */
     
-     // Method to prompt the user to enter another value
+     /**
+      * Method to prompt the user to enter another value
+      * @param field The type of input the user should type (ex. room number, hotel name, etc.)
+      */
      public void displayEnterAnother(String field) {
         JOptionPane.showMessageDialog(mainFrame, "Please enter another " + field);
     }
 
-     // Method to display a success message
+    /**
+     * Method to display a success message
+     * @param message Task that has been completed successfully
+     */
      public void displaySuccess(String message) {
         JOptionPane.showMessageDialog(null, message);
     }
 
-    // Method to display an error message for hotel not found
+    /**
+     * Method to display an error message for hotel not found
+     * @param hotelName name that cannot be found
+     */
     public void displayHotelNotFound(String hotelName) {
         JOptionPane.showMessageDialog(null, "Hotel not found: " + hotelName, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Method to display a message when the maximum number of rooms is reached
+    /**
+     * Method to display a message when the maximum number of rooms is reached
+     */
     public void displayMaxRooms() {
         JOptionPane.showMessageDialog(null, "Maximum number of rooms reached.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Method to display a message when the minimum number of rooms is reached
+    /**
+     * Method to display a message when the minimum number of rooms is reached
+     */
     public void displayMinRooms() {
         JOptionPane.showMessageDialog(null, "Minimum number of rooms reached.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-     // Method to display an error message for room not found
+    /**
+     * Method to display an error message for room not found
+     * @param roomNumber number of room that can't be found
+     */
     public void displayRoomNotFound(int roomNumber) {
         JOptionPane.showMessageDialog(null, "Room not found: " + roomNumber, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Method to display error messages
+    /**
+     * Method to display error messages
+     * @param message Error message to be shown to user
+     */
     public void displayError(String message) {
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }

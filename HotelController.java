@@ -33,7 +33,12 @@ public class HotelController {
         this.reservations = new ArrayList<>();
     }
 
-    // Helper Method to find a hotel by name
+    /**
+     * Helper Method to find a hotel by name
+     * 
+     * @param hotelName Name of the hotel to be searched
+     * @return          HotelModel object with the name hotelName
+     */
     public HotelModel findHotelByName(String hotelName) {
         for (HotelModel hotel : hotels) {
             if (hotel.getHotelName().equalsIgnoreCase(hotelName)) {
@@ -62,6 +67,10 @@ public class HotelController {
         }
     }
 
+    /**
+     * 
+     * @return The list of reservations
+     */
     public List<Reservation> getReservations() {
         return reservations;
     }
@@ -383,27 +392,27 @@ public class HotelController {
     }    
     
 
-/**
- * Helper method to check for overlapping reservations
- * @param room Room for which reservation is to be made
- * @param checkInDate Check-in date for the reservation
- * @param checkOutDate Check-out date for the reservation
- * @return
- */
-private boolean isOverlappingReservation(Room room, int checkInDate, int checkOutDate) {
-    for (Reservation existingReservation : room.getReservations()) {
-        int existingCheckIn = existingReservation.getCheckInDate();
-        int existingCheckOut = existingReservation.getCheckOutDate();
+    /**
+     * Helper method to check for overlapping reservations
+     * @param room Room for which reservation is to be made
+     * @param checkInDate Check-in date for the reservation
+     * @param checkOutDate Check-out date for the reservation
+     * @return
+     */
+    private boolean isOverlappingReservation(Room room, int checkInDate, int checkOutDate) {
+        for (Reservation existingReservation : room.getReservations()) {
+            int existingCheckIn = existingReservation.getCheckInDate();
+            int existingCheckOut = existingReservation.getCheckOutDate();
 
-        // Check for overlap
-        if ((checkInDate >= existingCheckIn && checkInDate <= existingCheckOut) || 
-            (checkOutDate >= existingCheckIn && checkOutDate <= existingCheckOut) ||
-            (checkInDate < existingCheckIn && checkOutDate > existingCheckOut)) {
-            return true;
+            // Check for overlap
+            if ((checkInDate >= existingCheckIn && checkInDate <= existingCheckOut) || 
+                (checkOutDate >= existingCheckIn && checkOutDate <= existingCheckOut) ||
+                (checkInDate < existingCheckIn && checkOutDate > existingCheckOut)) {
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
 
     /**
      * Cancels the reservation for the specified room in the hotel with the specified hotelName
@@ -533,6 +542,11 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
         }
     }
 
+    /**
+     * 
+     * @param hotelName Name of the hotel for which reservation details are to be retrieved
+     * @param date      Day in which user wants to check available/booked rooms 
+     */
     public void showRoomCountsForDate(String hotelName, int date) {
         HotelModel hotel = findHotelByName(hotelName);
         if (hotel != null) {
@@ -551,6 +565,11 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
         }
     }
 
+    /**
+     * 
+     * @param hotel Hotel in which room is from
+     * @param room  Room in which information is being shown
+     */
     public void showRoomInfoAcrossMonth(HotelModel hotel, Room room) {
         //if (hotel != null) {
             StringBuilder sb = new StringBuilder("Room information for the month:\n");
@@ -564,10 +583,6 @@ private boolean isOverlappingReservation(Room room, int checkInDate, int checkOu
                         sb.append("Available\n");
                     }
                 }
-            //}
             view.displayRoomInfoAcrossMonth(sb.toString());
-        //} else {
-        //    view.displayHotelNotFound(hotelName);
-        //}
     }
 }
