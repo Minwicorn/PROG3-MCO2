@@ -812,7 +812,7 @@ public class HotelView {
                 JOptionPane.PLAIN_MESSAGE);
     }
 
-    public void displayHotels(List<HotelModel> hotels) {
+   public void displayHotels(List<HotelModel> hotels) {
         DefaultTableModel model = (DefaultTableModel) hotelsTable.getModel();
         model.setRowCount(0); // Clear existing rows
     
@@ -820,10 +820,28 @@ public class HotelView {
             JOptionPane.showMessageDialog(mainFrame, "No hotels available.");
         } else {
             for (HotelModel hotel : hotels) {
-                model.addRow(new Object[]{
-                    hotel.getHotelName(),
-                   
-                });
+                String hotelName = hotel.getHotelName();
+                List<Room> rooms = hotel.getRooms(); // Assuming HotelModel has a getRooms() method
+    
+                if (rooms.isEmpty()) {
+                    // If no rooms are available, show the hotel name only
+                    model.addRow(new Object[]{hotelName, "N/A", "N/A", "N/A", "N/A"});
+                } else {
+                    for (Room room : rooms) {
+                        int roomNumber = room.getRoomNumber();
+                        String roomType = room.getRoomType();
+                        double price = room.getPrice();
+                        boolean status = room.isBooked();
+    
+                        model.addRow(new Object[]{
+                            hotelName,
+                            roomNumber,
+                            roomType,
+                            price,
+                            status
+                        });
+                    }
+                }
             }
         }
     }
