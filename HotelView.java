@@ -106,17 +106,19 @@ public class HotelView {
          // Create a new JFrame for Show Lists Hotel menu
          JFrame manageFrame = new JFrame("View Hotel");
          manageFrame.setSize(400, 400);
-         manageFrame.setLayout(new GridLayout(4, 1));
+         manageFrame.setLayout(new GridLayout(5, 1));
  
          JButton showHotelDetailsBtn = new JButton("Show Hotel Details");
          JButton estimateEarningBtn = new JButton("Estimate Earnings");
          JButton showReservationDetailsBtn = new JButton("Show Reservation Details");
          JButton listHotelsBtn = new JButton("List Hotels");
+         JButton listRoomsBtn = new JButton("List Rooms");
     
          manageFrame.add(showHotelDetailsBtn);
          manageFrame.add(estimateEarningBtn);
          manageFrame.add(showReservationDetailsBtn);
          manageFrame.add(listHotelsBtn);
+         manageFrame.add(listRoomsBtn);
 
          manageFrame.setVisible(true);
 
@@ -146,6 +148,13 @@ public class HotelView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listHotels();
+            }
+        });
+
+        listRoomsBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listRooms();
             }
         });
     }
@@ -819,6 +828,32 @@ public class HotelView {
         }
     }
 
+    public void displayRooms(List<Room> rooms) {
+        DefaultTableModel model = (DefaultTableModel) hotelsTable.getModel();
+        model.setRowCount(0); // Clear existing rows
+
+        if (rooms.isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "No rooms available.");
+        } else {
+            String book;
+            for (Room room : rooms) {
+                if(room.isBooked()) {
+                    book = "Booked";
+                }
+                else {
+                    book = "Available";
+                }
+                model.addRow(new Object[]{
+                    "",
+                    room.getRoomNumber(),
+                    room.getRoomType(),
+                    room.getPrice(),
+                    book,
+                });
+            }
+        }
+    }
+
     public void displayRoomDetails(Room room) {
         roomNumberLabel.setText("Room Number: " + room.getRoomNumber());
         roomTypeLabel.setText("Room type: " + room.getRoomType());
@@ -860,6 +895,12 @@ public class HotelView {
     private void listHotels() {
         List<HotelModel> hotels = controller.getHotels();
         displayHotels(hotels);
+    }
+
+    private void listRooms() {
+        HotelModel hotel = validateHotelName("Enter hotel name:");
+        List<Room> rooms = hotel.getRooms();
+        displayRooms(rooms);
     }
 
 
